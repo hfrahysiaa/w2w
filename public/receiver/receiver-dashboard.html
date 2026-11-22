@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receiver Dashboard | Waste2Worth</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <h2>Waste2Worth</h2>
+            <p class="sidebar-subtitle">Receiver Portal</p>
+
+            <nav>
+                <a class="active" href="receiver-dashboard.html">Dashboard</a>
+                <a href="available-food.html">Available Food</a>
+                <a href="my-claims.html">My Claims</a>
+                <a href="../index.html">Back to Home</a>
+            </nav>
+        </aside>
+
+       <main class="main">
+            <div class="topbar">
+                <div>
+                    <h1>Receiver Dashboard</h1>
+                    <p>Welcome to the Waste2Worth Receiver Portal.</p>
+                </div>
+                <span class="badge">Demo Mode</span>
+            </div>
+
+            <section class="card">
+                <h2>Welcome, Charity Organisation!</h2>
+                <p>
+                    Browse available surplus food and claim food items
+                    for your organisation.
+                </p>
+            </section>
+
+            <section class="stats-grid">
+                <div class="card stat-card">
+                    <p>Available Food</p>
+                    <h2>12</h2>
+                </div>
+
+                <div class="card stat-card">
+                    <p>My Claims</p>
+                    <h2 id="claimCount">0</h2>
+                </div>
+
+                <div class="card stat-card">
+                    <p>Completed Claims</p>
+                    <h2>3</h2>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Quick Actions</h2>
+                <p>Explore the available features below.</p>
+
+                <div class="button-group">
+                    <a class="btn btn-primary" href="available-food.html">
+                        Browse Available Food
+                    </a>
+
+                    <a class="btn btn-secondary" href="my-claims.html">
+                        View My Claims
+                    </a>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>About Waste2Worth</h2>
+                <p>
+                    Waste2Worth connects surplus food providers with
+                    charity organisations to reduce food waste and
+                    support communities in need.
+                </p>
+            </section>
+
+            <p class="demo-notice">
+                Demo Mode: This page uses sample data. Claims made in
+                this receiver portal are for demonstration only and
+                are not real reservations.
+            </p>
+        </main>
+    </div>
+
+    <script>
+        const claims = JSON.parse(
+            localStorage.getItem('w2wDemoClaims') || '[]'
+        );
+
+        document.getElementById('claimCount').textContent = claims.length;
+    </script>
+</body>
+</html>

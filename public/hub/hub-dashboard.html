@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub Dashboard | Waste2Worth</title>
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+    <div class="logo">Waste2Worth
+        <small>GIVING WASTE A PURPOSE</small>
+    </div>
+
+    <div class="profile">
+        <b id="staffName">Hub Staff</b>
+        <small>Hub Staff Workspace</small>
+    </div>
+
+    <div class="nav-label">MAIN MENU</div>
+
+    <a class="nav-btn active" href="/hub/hub-dashboard.html">🏠 <span>Dashboard</span></a>
+    <a class="nav-btn" href="/hub/quality-check.html">🔍 <span>Quality Check</span></a>
+    <a class="nav-btn" href="/hub/post-food.html">➕ <span>Post Surplus Food</span></a>
+    <a class="nav-btn" href="/hub/food-listings.html">📦 <span>Surplus Listings</span></a>
+
+    <a class="nav-btn logout" href="/">↪ <span>Back to Homepage</span></a>
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+        <div>
+            <b>Waste2Worth Management</b><br>
+            <small>Admin & Hub Staff Workspace</small>
+        </div>
+        <span class="tag">LIVE DATABASE</span>
+    </div>
+
+    <h1>Dashboard Overview</h1>
+    <p class="subtitle">Welcome back! Here's your hub activity.</p>
+
+    <div class="stats">
+
+        <div class="card">
+            <div class="stat-title">Total Quality Checks</div>
+            <div class="stat-number" id="totalChecks">—</div>
+            <div class="stat-note">Inspection records</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">Passed Items</div>
+            <div class="stat-number" id="passedItems">—</div>
+            <div class="stat-note">Passed inspections</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">Rejected Items</div>
+            <div class="stat-number" id="rejectedItems">—</div>
+            <div class="stat-note">Rejected inspections</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">Available Listings</div>
+            <div class="stat-number" id="availableListings">—</div>
+            <div class="stat-note">Available surplus food</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>Quick Actions</h2>
+        <p class="subtitle">Choose an activity to continue.</p>
+
+        <div class="actions">
+            <a class="btn" href="/hub/quality-check.html">+ New Quality Check</a>
+            <a class="btn btn-light" href="/hub/post-food.html">+ Post Surplus Food</a>
+            <a class="btn btn-light" href="/hub/food-listings.html">View Food Listings</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Recent Food Listings</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Food ID</th>
+                        <th>Food Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="recentListings">
+                    <tr><td colspan="5">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="errorMessage" class="subtitle"></p>
+    </div>
+
+</main>
+</div>
+
+<script>
+const user = JSON.parse(sessionStorage.getItem('w2wUser') || 'null');
+
+if (user) {
+    document.getElementById('staffName').textContent =
+        user.fullName || user.username || 'Hub Staff';
+}
+
+// Support common API response formats
+function getRows(result) {
+    if (Array.isArray(result)) return result;
+    if (Array.isArray(result.data)) return result.data;
+    if (Array.isArray(result.recordset)) return result.recordset;
+    if (Array.isArray(result.items)) return result.items;
+    return [];
+}
+
+async function loadDashboard() {
+    try {
+        const [qualityResponse, foodResponse] = await Promise.all([
+            fetch('/api/quality-check'),
+            fetch('/api/food-listing')
+        ]);
+
+        if (!qualityResponse.ok || !foodResponse.ok) {
+            throw new Error('Unable to retrieve data from the server.');
+        }
+
+        const qualityResult = await qualityResponse.json();
+        const foodResult = await foodResponse.json();
+
+        if (qualityResult.success === false) {
+            throw new Error(qualityResult.message || 'Quality Check API error.');
+        }
+
+        if (foodResult.success === false) {
+            throw new Error(foodResult.message || 'Food Listing API error.');
+        }
+
+        const qualityRecords = getRows(qualityResult);
+        const foodRecords = getRows(foodResult);
+
+        document.getElementById('totalChecks').textContent =
+            qualityRecords.length;
+
+        document.getElementById('passedItems').textContent =
+            qualityRecords.filter(x => x.QualityStatus === 'Passed').length;
+
+        document.getElementById('rejectedItems').textContent =
+            qualityRecords.filter(x => x.QualityStatus === 'Rejected').length;
+
+        document.getElementById('availableListings').textContent =
+            foodRecords.filter(x => x.FoodStatus === 'Available').length;
+
+        const recent = foodRecords.slice(-5).reverse();
+
+        document.getElementById('recentListings').innerHTML =
+            recent.map(x => `
+                <tr>
+                    <td>#${x.FoodID}</td>
+                    <td>${escapeHTML(x.FoodName)}</td>
+                    <td>${escapeHTML(x.FoodCategory)}</td>
+                    <td>${escapeHTML(x.Quantity)}</td>
+                    <td>
+                        <span class="status status-green">
+                            ${escapeHTML(x.FoodStatus)}
+                        </span>
+                    </td>
+                </tr>
+            `).join('') ||
+            '<tr><td colspan="5" class="empty">No food listings available.</td></tr>';
+
+    } catch (error) {
+        document.getElementById('errorMessage').textContent =
+            error.message + ' Please check your server and API connection.';
+
+        document.getElementById('recentListings').innerHTML =
+            '<tr><td colspan="5" class="empty">Data could not be loaded.</td></tr>';
+    }
+}
+
+function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[char]);
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>

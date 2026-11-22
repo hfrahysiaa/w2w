@@ -1,0 +1,622 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quality Check | Waste2Worth</title>
+<link rel="stylesheet" href="/assets/style.css">
+
+<style>
+.source-options {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.source-card {
+    flex: 1;
+    min-width: 220px;
+    padding: 18px;
+    border: 1px solid #dce5dc;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+}
+
+.source-card:hover {
+    border-color: #17634f;
+}
+
+.source-card.selected {
+    border: 2px solid #17634f;
+    background: #edf7f1;
+}
+
+.source-card h3 {
+    margin: 0 0 8px;
+    color: #075c4b;
+}
+
+.source-card p {
+    margin: 0;
+    color: #718078;
+    font-size: 14px;
+}
+
+.source-section {
+    display: none;
+    margin-top: 20px;
+}
+
+.source-section.show {
+    display: block;
+}
+
+.demo-note {
+    background: #fff8e8;
+    border-left: 4px solid #e5ad42;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 6px;
+    color: #70551c;
+    font-size: 13px;
+}
+
+.field input:read-only {
+    background: #f1f4f1;
+    cursor: not-allowed;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+    <div class="logo">Waste2Worth
+        <small>GIVING WASTE A PURPOSE</small>
+    </div>
+
+    <div class="profile">
+        <b>Hub Staff</b>
+        <small>Hub Staff Workspace</small>
+    </div>
+
+    <div class="nav-label">MAIN MENU</div>
+
+    <a class="nav-btn" href="/hub/hub-dashboard.html">🏠 <span>Dashboard</span></a>
+    <a class="nav-btn active" href="/hub/quality-check.html">🔍 <span>Quality Check</span></a>
+    <a class="nav-btn" href="/hub/post-food.html">➕ <span>Post Surplus Food</span></a>
+    <a class="nav-btn" href="/hub/food-listings.html">📦 <span>Surplus Listings</span></a>
+
+    <a class="nav-btn logout" href="/">↪ <span>Back to Homepage</span></a>
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+        <div>
+            <b>Waste2Worth Management</b><br>
+            <small>Hub Staff Workspace</small>
+        </div>
+        <span class="tag">LIVE DATABASE</span>
+    </div>
+
+    <h1>Quality Check</h1>
+
+    <p class="subtitle">
+        Inspect incoming branch transfers or add surplus items from your hub.
+    </p>
+
+    <div class="notice">
+        Quantity Received must equal Quantity Passed plus Quantity Rejected.
+        Only passed food can be published in Surplus Listings.
+    </div>
+
+    <div class="panel">
+
+        <h2>Select Item Source</h2>
+
+        <p class="subtitle">
+            Choose where the item comes from before performing quality inspection.
+        </p>
+
+        <div class="source-options">
+
+            <div class="source-card" id="transferCard"
+                 onclick="selectSource('transfer')">
+                <h3>🚚 Incoming Branch Transfer</h3>
+                <p>Select an item sent from a branch.</p>
+            </div>
+
+            <div class="source-card" id="hubCard"
+                 onclick="selectSource('hub')">
+                <h3>🏢 Add Hub Item</h3>
+                <p>Manually add food or coffee waste from your hub.</p>
+            </div>
+
+        </div>
+
+        <!-- INCOMING BRANCH TRANSFER -->
+
+        <div class="source-section" id="transferSection">
+
+            <h2>Incoming Branch Transfer</h2>
+
+            <div class="demo-note">
+                Demo data is currently displayed because the Branch database
+                is not connected yet. This dropdown will be connected to
+                Branch_Transfer_Item later.
+            </div>
+
+            <div class="field">
+                <label>Select Incoming Transfer *</label>
+
+                <select id="transferSelect" onchange="selectTransfer()">
+                    <option value="">-- Select Incoming Item --</option>
+                    <option value="201"
+                        data-name="Nasi Lemak"
+                        data-category="Food"
+                        data-quantity="30">
+                        TRF-201 - Nasi Lemak (30 units)
+                    </option>
+                    <option value="202"
+                        data-name="Coffee Grounds"
+                        data-category="Coffee"
+                        data-quantity="10">
+                        TRF-202 - Coffee Grounds (10 units)
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- HUB OWN ITEM -->
+
+        <div class="source-section" id="hubSection">
+            <h2>Add Item from Hub</h2>
+
+            <p class="subtitle">
+                Enter the details of food or coffee waste collected by your hub.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- QUALITY CHECK FORM -->
+
+    <div class="panel" id="inspectionPanel" style="display:none;">
+
+        <h2>Quality Inspection Form</h2>
+
+        <form id="qualityForm">
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Item Name *</label>
+                    <input type="text" id="itemName"
+                        placeholder="e.g. Sandwich" required>
+                </div>
+
+                <div class="field">
+                    <label>Item Category *</label>
+                    <select id="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Quantity Received *</label>
+                    <input type="number" id="received"
+                        min="1" required placeholder="Enter quantity">
+                </div>
+
+                <div class="field">
+                    <label>Quantity Passed *</label>
+                    <input type="number" id="passed"
+                        min="0" required placeholder="Enter quantity">
+                </div>
+
+                <div class="field">
+                    <label>Quantity Rejected *</label>
+                    <input type="number" id="rejected"
+                        min="0" required placeholder="Enter quantity">
+                </div>
+
+                <div class="field">
+                    <label>Transfer ID</label>
+                    <input type="number" id="transferID"
+                        readonly placeholder="Hub item - No transfer ID">
+                </div>
+
+                <div class="field">
+                    <label>Staff ID *</label>
+                    <input type="number" id="staffID"
+                        min="1" required readonly>
+                </div>
+
+            </div>
+
+            <div class="actions">
+
+                <button type="submit" class="btn">
+                    Save Quality Check
+                </button>
+
+                <button type="reset" class="btn btn-light">
+                    Clear Form
+                </button>
+
+            </div>
+
+        </form>
+
+        <p id="message" class="subtitle"></p>
+
+    </div>
+
+    <!-- QUALITY CHECK RECORDS -->
+
+    <div class="panel">
+
+        <h2>Quality Check Records</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Quality ID</th>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Received</th>
+                        <th>Passed</th>
+                        <th>Rejected</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="records">
+                    <tr>
+                        <td colspan="7">Loading records...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</main>
+</div>
+
+<script>
+
+const form = document.getElementById('qualityForm');
+const message = document.getElementById('message');
+
+let selectedSource = '';
+
+
+// Get logged-in staff information
+
+let currentUser = {};
+
+try {
+    currentUser = JSON.parse(
+        sessionStorage.getItem('w2wUser')
+    ) || {};
+} catch (error) {
+    currentUser = {};
+}
+
+const staffID = Number(currentUser.staffID || 0);
+
+document.getElementById('staffID').value = staffID;
+
+
+// Select item source
+
+function selectSource(source) {
+
+    selectedSource = source;
+
+    document.getElementById('transferCard')
+        .classList.toggle('selected', source === 'transfer');
+
+    document.getElementById('hubCard')
+        .classList.toggle('selected', source === 'hub');
+
+    document.getElementById('transferSection')
+        .classList.toggle('show', source === 'transfer');
+
+    document.getElementById('hubSection')
+        .classList.toggle('show', source === 'hub');
+
+    document.getElementById('inspectionPanel').style.display = 'none';
+
+    form.reset();
+
+    document.getElementById('staffID').value = staffID;
+
+    document.getElementById('transferSelect').value = '';
+
+    document.getElementById('itemName').readOnly = false;
+    document.getElementById('category').disabled = false;
+    document.getElementById('received').readOnly = false;
+
+    document.getElementById('transferID').value = '';
+
+    message.textContent = '';
+
+    if (source === 'hub') {
+
+        document.getElementById('inspectionPanel').style.display = 'block';
+
+        document.getElementById('transferID').value = '';
+
+    }
+
+}
+
+
+// Select incoming transfer from dropdown
+
+function selectTransfer() {
+
+    const select = document.getElementById('transferSelect');
+
+    const option = select.options[select.selectedIndex];
+
+    if (!option.value) {
+
+        document.getElementById('inspectionPanel').style.display = 'none';
+
+        return;
+    }
+
+    document.getElementById('itemName').value =
+        option.dataset.name;
+
+    document.getElementById('category').value =
+        option.dataset.category;
+
+    document.getElementById('received').value =
+        option.dataset.quantity;
+
+    document.getElementById('transferID').value =
+        option.value;
+
+    // Auto-filled transfer information
+
+    document.getElementById('itemName').readOnly = true;
+    document.getElementById('category').disabled = true;
+    document.getElementById('received').readOnly = true;
+
+    document.getElementById('inspectionPanel').style.display = 'block';
+
+    document.getElementById('passed').value = '';
+    document.getElementById('rejected').value = '';
+
+    message.textContent = '';
+
+}
+
+
+// Display quality status
+
+function statusBadge(status) {
+
+    let css = 'status-yellow';
+
+    if (status === 'Passed') {
+        css = 'status-green';
+    } else if (status === 'Rejected') {
+        css = 'status-red';
+    }
+
+    return `<span class="status ${css}">${escapeHTML(status)}</span>`;
+}
+
+
+// Protect displayed text
+
+function escapeHTML(value) {
+
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[char]);
+
+}
+
+
+// Load quality check records from database
+
+async function loadRecords() {
+
+    try {
+
+        const response = await fetch('/api/quality-check');
+
+        if (!response.ok) {
+            throw new Error('Unable to retrieve quality check records.');
+        }
+
+        const result = await response.json();
+
+        const records = Array.isArray(result)
+            ? result
+            : (result.data || result.recordset || []);
+
+        document.getElementById('records').innerHTML =
+            records.map(item => `
+                <tr>
+                    <td>#QC${item.QualityID}</td>
+                    <td>${escapeHTML(item.ItemName)}</td>
+                    <td>${escapeHTML(item.Category)}</td>
+                    <td>${escapeHTML(item.QuantityReceived)}</td>
+                    <td>${escapeHTML(item.QuantityPassed)}</td>
+                    <td>${escapeHTML(item.QuantityRejected)}</td>
+                    <td>${statusBadge(item.QualityStatus)}</td>
+                </tr>
+            `).join('') ||
+            '<tr><td colspan="7" class="empty">No records available.</td></tr>';
+
+    } catch (error) {
+
+        document.getElementById('records').innerHTML =
+            '<tr><td colspan="7" class="empty">Unable to load records.</td></tr>';
+
+        message.textContent = error.message;
+
+    }
+
+}
+
+
+// Submit quality check
+
+form.addEventListener('submit', async function(event) {
+
+    event.preventDefault();
+
+    if (!selectedSource) {
+        message.textContent = 'Please select an item source first.';
+        return;
+    }
+
+    if (!staffID) {
+        message.textContent = 'Unable to identify logged-in Staff ID. Please log in again.';
+        return;
+    }
+
+    const received = Number(document.getElementById('received').value);
+    const passed = Number(document.getElementById('passed').value);
+    const rejected = Number(document.getElementById('rejected').value);
+
+    if (received !== passed + rejected) {
+        message.textContent =
+            'Error: Quantity Received must equal Passed + Rejected.';
+        return;
+    }
+
+    if (received <= 0 || passed < 0 || rejected < 0) {
+        message.textContent = 'Please enter valid quantities.';
+        return;
+    }
+
+    if (passed > received || rejected > received) {
+        message.textContent = 'Invalid quantity entered.';
+        return;
+    }
+
+    const transferValue =
+        document.getElementById('transferID').value;
+
+    const payload = {
+
+        ItemName: document.getElementById('itemName').value.trim(),
+
+        Category: document.getElementById('category').value,
+
+        QuantityReceived: received,
+
+        QuantityPassed: passed,
+
+        QuantityRejected: rejected,
+
+        StaffID: staffID,
+
+        TransferID: selectedSource === 'transfer'
+            ? Number(transferValue)
+            : null
+
+    };
+
+    if (selectedSource === 'transfer' && !transferValue) {
+        message.textContent = 'Please select an incoming transfer.';
+        return;
+    }
+
+    try {
+
+        message.textContent = 'Saving quality check...';
+
+        const response = await fetch('/api/quality-check', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify(payload)
+
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.message || 'Failed to save quality check.'
+            );
+        }
+
+        message.textContent =
+            'Quality check saved successfully!';
+
+        form.reset();
+
+        document.getElementById('staffID').value = staffID;
+
+        document.getElementById('inspectionPanel').style.display = 'none';
+
+        if (selectedSource === 'transfer') {
+            document.getElementById('transferSelect').value = '';
+        }
+
+        await loadRecords();
+
+    } catch (error) {
+
+        message.textContent = error.message;
+
+    }
+
+});
+
+
+// Clear form
+
+form.addEventListener('reset', function() {
+
+    setTimeout(() => {
+
+        document.getElementById('staffID').value = staffID;
+
+        if (selectedSource === 'hub') {
+            document.getElementById('transferID').value = '';
+        }
+
+    }, 0);
+
+});
+
+
+// Load records when page opens
+
+loadRecords();
+
+</script>
+
+</body>
+</html>

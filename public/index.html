@@ -1,0 +1,1169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Waste2Worth | Give Waste a Second Life</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+    --forest: #075B46;
+    --deep: #064535;
+    --green: #079B70;
+    --sage: #DCECE2;
+    --cream: #F7F8F3;
+    --white: #FFFFFF;
+    --text: #18382D;
+    --muted: #788B80;
+    --border: #E5ECE6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+}
+
+/* NAVIGATION BAR */
+
+.navbar {
+    height: 85px;
+    padding: 0 7%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--green);
+    color: white;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+.logo h2 {
+    color: var(--text);
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.nav-btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 13px 22px;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.login-btn {
+    background: transparent;
+    color: var(--forest);
+}
+
+.login-btn:hover {
+    background: var(--sage);
+}
+
+.register-btn {
+    background: var(--green);
+    color: white;
+    box-shadow: 0 4px 12px rgba(7,155,112,0.18);
+}
+
+.register-btn:hover {
+    background: var(--forest);
+}
+
+/* HERO SECTION */
+
+.hero {
+    background:
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,0.09), transparent 30%),
+        linear-gradient(125deg, #064535, #08745A);
+
+    min-height: 420px;
+    padding: 95px 20px;
+    text-align: center;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-label {
+    display: inline-block;
+    padding: 10px 23px;
+    border-radius: 40px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.10);
+    color: #D5EDE2;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 28px;
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 65px);
+    line-height: 1.18;
+    max-width: 1000px;
+    margin-bottom: 23px;
+}
+
+.hero h1 span {
+    color: #B9E4C9;
+}
+
+.hero p {
+    max-width: 740px;
+    font-size: 17px;
+    line-height: 1.9;
+    color: #E0F0E8;
+}
+
+.hero-btn {
+    margin-top: 32px;
+    padding: 15px 29px;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    color: var(--forest);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.hero-btn:hover {
+    background: #DDF1E5;
+    transform: translateY(-2px);
+}
+
+/* INTRODUCTION */
+
+.intro {
+    padding: 75px 20px 45px;
+    text-align: center;
+}
+
+.intro-label {
+    color: var(--green);
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(27px, 3vw, 39px);
+    margin-bottom: 17px;
+    color: var(--forest);
+}
+
+.intro p {
+    max-width: 760px;
+    margin: auto;
+    color: var(--muted);
+    line-height: 1.9;
+    font-size: 15px;
+}
+
+/* IMPACT FEATURES */
+
+.features {
+    padding: 15px 7% 65px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.feature-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 25px;
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 32px;
+    margin-bottom: 13px;
+}
+
+.feature-card h3 {
+    color: var(--forest);
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* LISTING SECTION */
+
+.listing-section {
+    padding: 45px 7% 85px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.section-title small {
+    color: var(--green);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    font-size: 11px;
+}
+
+.section-title h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: var(--forest);
+    margin-top: 8px;
+}
+
+.section-title p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+}
+
+/* FILTER BUTTONS */
+
+.filters {
+    display: flex;
+    gap: 5px;
+    padding: 6px;
+    background: #E8EEEA;
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.filters button {
+    padding: 12px 18px;
+    border: none;
+    background: transparent;
+    color: #61756A;
+    border-radius: 9px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.filters button.active {
+    background: white;
+    color: var(--forest);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* FOOD CARDS */
+
+.food-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+}
+
+.food-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: 0.25s;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.035);
+}
+
+.food-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+}
+
+.food-image {
+    height: 215px;
+    position: relative;
+    background: linear-gradient(135deg, #DDEDE3, #A8D0B8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.food-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder {
+    font-size: 70px;
+}
+
+.verified {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #00A879;
+    color: white;
+    padding: 9px 13px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.category {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--forest);
+    color: white;
+    padding: 9px 15px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.food-details {
+    padding: 24px;
+}
+
+.food-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.food-top h3 {
+    font-size: 20px;
+    line-height: 1.4;
+    color: var(--text);
+}
+
+.quantity {
+    white-space: nowrap;
+    background: #EFF4F0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.food-description {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+    min-height: 43px;
+    margin-bottom: 17px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    border-top: 1px solid #EDF1ED;
+    padding: 13px 0;
+    font-size: 12px;
+}
+
+.info-row span {
+    color: #899A91;
+}
+
+.info-row strong {
+    text-align: right;
+    max-width: 65%;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.claim-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 11px;
+    background: var(--green);
+    color: white;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.claim-btn:hover {
+    background: var(--forest);
+}
+
+.message {
+    grid-column: 1 / -1;
+    padding: 65px 20px;
+    text-align: center;
+    color: var(--muted);
+    background: white;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+}
+
+.message h3 {
+    color: var(--forest);
+    margin-bottom: 10px;
+}
+
+/* BOTTOM CALL TO ACTION */
+
+.cta {
+    margin: 0 7% 75px;
+    padding: 50px 25px;
+    background: var(--sage);
+    border-radius: 22px;
+    text-align: center;
+}
+
+.cta h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--forest);
+    font-size: 29px;
+    margin-bottom: 13px;
+}
+
+.cta p {
+    color: #637A6B;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* FOOTER */
+
+footer {
+    background: #102E25;
+    color: white;
+    padding: 48px 7% 25px;
+}
+
+.footer-main {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 35px;
+}
+
+.footer-brand h2 {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.footer-brand p {
+    color: #B3C9BC;
+    font-size: 13px;
+    line-height: 1.8;
+    max-width: 340px;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 20px;
+    text-align: center;
+    color: #A9BFB2;
+    font-size: 12px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .food-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .navbar {
+        height: 70px;
+        padding: 0 4%;
+    }
+
+    .logo h2 {
+        font-size: 18px;
+    }
+
+    .logo-icon {
+        width: 39px;
+        height: 39px;
+    }
+
+    .nav-right {
+        gap: 3px;
+    }
+
+    .nav-btn {
+        padding: 10px;
+        font-size: 11px;
+    }
+
+    .hero {
+        padding: 75px 20px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    .intro {
+        padding: 55px 20px 30px;
+    }
+
+    .listing-section {
+        padding: 35px 5% 60px;
+    }
+
+    .section-title h2 {
+        font-size: 26px;
+    }
+
+    .food-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .filters {
+        width: 100%;
+    }
+
+    .filters button {
+        flex: 1;
+        padding: 10px 8px;
+    }
+
+    .cta {
+        margin: 0 5% 50px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<header class="navbar">
+
+    <a href="/" class="logo">
+        <div class="logo-icon">🌱</div>
+        <h2>Waste2Worth</h2>
+    </a>
+
+    <div class="nav-right">
+
+        <button class="nav-btn login-btn" onclick="goLogin()">
+            Log In
+        </button>
+
+        <button class="nav-btn register-btn" onclick="goRegister()">
+            ✚ Register
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- HERO SECTION -->
+
+<section class="hero">
+
+    <div class="hero-label">
+        FOOD RESCUE & SUSTAINABILITY PLATFORM
+    </div>
+
+    <h1>
+        Every Leftover Deserves<br>
+        <span>a Second Chance.</span>
+    </h1>
+
+    <p>
+        From surplus meals that can feed someone to coffee grounds
+        that can grow something new, every little thing can make a difference.
+    </p>
+
+    <button class="hero-btn"
+        onclick="document.getElementById('listings').scrollIntoView({behavior:'smooth'})">
+
+        Explore Our Listings ↓
+
+    </button>
+
+</section>
+
+
+<!-- INTRODUCTION -->
+
+<section class="intro">
+
+    <div class="intro-label">
+        OUR PURPOSE
+    </div>
+
+    <h2>Every Little Thing Deserves a Second Life 🌱</h2>
+
+    <p>
+        Whether it's a meal that can feed someone in need or coffee grounds
+        that can nurture something new, together we can turn waste into worth.
+        Because even the smallest act of kindness can create a meaningful change.
+    </p>
+
+</section>
+
+
+<!-- FEATURES -->
+
+<section class="features">
+
+    <div class="feature-card">
+
+        <div class="feature-icon">🍱</div>
+
+        <h3>Rescue Surplus Food</h3>
+
+        <p>
+            Give perfectly good surplus food another chance
+            instead of letting it go to waste.
+        </p>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <div class="feature-icon">☕</div>
+
+        <h3>Repurpose Coffee Waste</h3>
+
+        <p>
+            Turn used coffee grounds into valuable resources
+            for a more sustainable future.
+        </p>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <div class="feature-icon">🌍</div>
+
+        <h3>Create a Better Tomorrow</h3>
+
+        <p>
+            Small actions, shared efforts and meaningful
+            contributions can make a difference.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- LISTINGS -->
+
+<section class="listing-section" id="listings">
+
+    <div class="section-heading">
+
+        <div class="section-title">
+
+            <small>DISCOVER & MAKE A DIFFERENCE</small>
+
+            <h2>Give Waste a New Purpose</h2>
+
+            <p>
+                Explore available surplus food and coffee waste listings.
+            </p>
+
+        </div>
+
+
+        <div class="filters">
+
+            <button class="active"
+                onclick="filterFood('All', this)">
+                All Listings
+            </button>
+
+            <button
+                onclick="filterFood('Food', this)">
+                Surplus Food
+            </button>
+
+            <button
+                onclick="filterFood('Coffee Waste', this)">
+                Coffee Waste
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="food-grid" id="foodGrid">
+
+        <div class="message">
+
+            <h3>Preparing Something Good... 🌱</h3>
+
+            Loading available listings.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CALL TO ACTION -->
+
+<section class="cta">
+
+    <h2>Be Part of Something Meaningful 💚</h2>
+
+    <p>
+        Every rescued meal matters. Every reused resource counts.
+        <br>
+        Together, let's make sure nothing valuable goes to waste.
+    </p>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="footer-main">
+
+        <div class="footer-brand">
+
+            <h2>🌱 Waste2Worth</h2>
+
+            <p>
+                Giving surplus food a second chance and coffee waste
+                a new purpose. Building a more sustainable community,
+                one small action at a time.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 Waste2Worth. All Rights Reserved.
+
+        <br><br>
+
+        Turning Waste Into Worth, Together.
+
+    </div>
+
+</footer>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+// ===============================
+// AUTHENTICATION NAVIGATION
+// ===============================
+
+function goLogin() {
+
+    // Open login page
+    window.location.href = "/login.html";
+
+}
+
+
+function goRegister() {
+
+    // Open Receiver / Charity registration page
+    window.location.href = "/register.html";
+
+}
+
+
+// ===============================
+// FOOD DATA
+// ===============================
+
+let allFood = [];
+
+
+// ===============================
+// LOAD FOOD FROM SQL SERVER
+// ===============================
+
+async function loadFood() {
+
+    const grid = document.getElementById("foodGrid");
+
+    try {
+
+        const response = await fetch("/api/food-listing");
+
+        if (!response.ok) {
+            throw new Error("Failed to retrieve food listings.");
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Food listing request failed.");
+        }
+
+        allFood = result.data || [];
+
+        displayFood(allFood);
+
+    }
+
+    catch (error) {
+
+        console.error("Food Listing Error:", error);
+
+        grid.innerHTML = `
+            <div class="message">
+
+                <h3>Unable to Load Listings</h3>
+
+                Please check your backend server and API connection.
+
+            </div>
+        `;
+
+    }
+
+}
+
+
+// ===============================
+// DISPLAY FOOD CARDS
+// ===============================
+
+function displayFood(foodList) {
+
+    const grid = document.getElementById("foodGrid");
+
+    grid.innerHTML = "";
+
+    if (foodList.length === 0) {
+
+        grid.innerHTML = `
+            <div class="message">
+
+                <h3>No Listings Available Yet 🌱</h3>
+
+                Check back later. Something good might be waiting!
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    foodList.forEach(food => {
+
+        const card = document.createElement("div");
+
+        card.className = "food-card";
+
+
+        const image = food.FoodPhoto
+            ? `<img src="${escapeHTML(food.FoodPhoto)}"
+                alt="${escapeHTML(food.FoodName)}"
+                onerror="this.parentElement.innerHTML='<span class=placeholder>🍱</span>'">`
+            : `<span class="placeholder">🍱</span>`;
+
+
+        const expiry = food.ExpiryDateTime
+            ? new Date(food.ExpiryDateTime).toLocaleString("en-MY")
+            : "Not specified";
+
+
+        const pickup = food.LastPickupTime
+            ? new Date(food.LastPickupTime).toLocaleString("en-MY")
+            : "Not specified";
+
+
+        card.innerHTML = `
+
+            <div class="food-image">
+
+                ${image}
+
+                <span class="verified">
+                    ✓ QA Verified
+                </span>
+
+                <span class="category">
+                    ${escapeHTML(food.FoodCategory || "Food")}
+                </span>
+
+            </div>
+
+
+            <div class="food-details">
+
+                <div class="food-top">
+
+                    <h3>
+                        ${escapeHTML(food.FoodName)}
+                    </h3>
+
+                    <span class="quantity">
+                        Qty: ${escapeHTML(food.Quantity)}
+                    </span>
+
+                </div>
+
+
+                <p class="food-description">
+
+                    ${escapeHTML(food.FoodSafetyTag || "Quality checked and ready for collection.")}
+
+                </p>
+
+
+                <div class="info-row">
+
+                    <span>Allergen / Info</span>
+
+                    <strong>
+                        ${escapeHTML(food.AllergenInfo || "Not specified")}
+                    </strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Expiry Date</span>
+
+                    <strong>
+                        ${escapeHTML(expiry)}
+                    </strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span>Last Pickup</span>
+
+                    <strong>
+                        ${escapeHTML(pickup)}
+                    </strong>
+
+                </div>
+
+
+                <button class="claim-btn"
+                    onclick="claimFood(${Number(food.FoodID)})">
+
+                    ♡ &nbsp; Claim Item
+
+                </button>
+
+            </div>
+
+        `;
+
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+// ===============================
+// FILTER LISTINGS
+// ===============================
+
+function filterFood(category, button) {
+
+    document.querySelectorAll(".filters button")
+        .forEach(btn => btn.classList.remove("active"));
+
+    button.classList.add("active");
+
+
+    if (category === "All") {
+
+        displayFood(allFood);
+
+    }
+
+    else if (category === "Food") {
+
+        const filtered = allFood.filter(food =>
+            food.FoodCategory?.toLowerCase() === "food"
+        );
+
+        displayFood(filtered);
+
+    }
+
+    else if (category === "Coffee Waste") {
+
+        // Coffee waste has its own listing module.
+        // Connect its API after the database structure is ready.
+
+        document.getElementById("foodGrid").innerHTML = `
+
+            <div class="message">
+
+                <h3>Give Coffee Grounds a Second Life ☕</h3>
+
+                Coffee waste listings will appear here
+                once the Coffee Waste module is connected.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ===============================
+// CLAIM ITEM
+// LOGIN REQUIRED
+// ===============================
+
+function claimFood(foodID) {
+
+    const user = sessionStorage.getItem("w2wUser");
+
+    // If user has not logged in, redirect to login page
+    if (!user) {
+
+        window.location.href =
+            "/login.html?foodID=" + encodeURIComponent(foodID);
+
+        return;
+
+    }
+
+    // Claim API will be connected when Receiver module is ready
+    alert("You are logged in. Claim functionality will be available soon.");
+
+}
+
+
+// ===============================
+// HTML ESCAPING
+// ===============================
+
+function escapeHTML(value) {
+
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+
+    })[char]);
+
+}
+
+
+// ===============================
+// INITIALIZE WEBSITE
+// ===============================
+
+loadFood();
+
+</script>
+
+</body>
+</html>

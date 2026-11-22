@@ -1,0 +1,697 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard | Waste2Worth</title>
+
+<link rel="stylesheet" href="/assets/style.css">
+
+<style>
+
+/* ADMIN DASHBOARD */
+
+.admin-profile {
+    background: var(--sage);
+    padding: 13px;
+    border-radius: 10px;
+    margin: 27px 0 23px;
+    font-size: 13px;
+}
+
+.admin-profile small {
+    display: block;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.main {
+    min-width: 0;
+}
+
+.dashboard-heading {
+    margin-bottom: 25px;
+}
+
+.dashboard-heading p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 25px 0;
+}
+
+.admin-stat {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 20px;
+    min-width: 0;
+}
+
+.admin-stat p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.admin-stat h2 {
+    font-family: Georgia, serif;
+    color: var(--green);
+    font-size: 29px;
+    margin: 0 0 5px;
+}
+
+.admin-stat small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.admin-section {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.admin-section h2 {
+    margin-bottom: 8px;
+}
+
+.section-description {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 18px;
+}
+
+.admin-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 13px 11px;
+    border-bottom: 1px solid #edf0eb;
+    text-align: left;
+    font-size: 12px;
+}
+
+.admin-table th {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.report-status {
+    display: inline-block;
+    background: #e7f5ed;
+    color: #287653;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.tracking-status {
+    display: inline-block;
+    background: #fff3d9;
+    color: #a87920;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.quick-link {
+    display: block;
+    padding: 18px;
+    background: #f5f8f3;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--green);
+}
+
+.quick-link:hover {
+    background: var(--sage);
+}
+
+.quick-link strong {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.quick-link small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.dashboard-note {
+    background: #edf7f0;
+    border-left: 3px solid #6bc5aa;
+    padding: 13px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+@media(max-width:850px) {
+    .admin-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media(max-width:600px) {
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-links {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Waste2Worth
+            <small>GIVING WASTE A PURPOSE</small>
+        </div>
+
+        <div class="admin-profile">
+            <b id="adminName">Administrator</b>
+            <small>Admin Workspace</small>
+        </div>
+
+        <div class="nav-label">MAIN MENU</div>
+
+        <a class="nav-btn active" href="/admin/admin-dashboard.html">
+            🏠 <span>Dashboard</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/analytics-report.html">
+            📊 <span>Analytics Report</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/tracking-report.html">
+            📍 <span>Tracking Report</span>
+        </a>
+
+        <div class="nav-label" style="margin-top:20px;">
+            ACCOUNT
+        </div>
+
+        <a class="nav-btn logout" href="#" id="logoutBtn">
+            ↪ <span>Logout</span>
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+                <b>Waste2Worth Management</b><br>
+                <small>Administrator Workspace</small>
+            </div>
+
+            <span class="tag">DEMO MODE</span>
+
+        </div>
+
+
+        <!-- PAGE HEADING -->
+
+        <div class="dashboard-heading">
+
+            <h1>Admin Dashboard</h1>
+
+            <p>
+                Monitor Waste2Worth reports, food waste and pickup activities.
+            </p>
+
+        </div>
+
+
+        <div class="dashboard-note">
+            <b>Demo Dashboard:</b>
+            All figures displayed on this page are sample data for
+            demonstration purposes. Database integration will be added later.
+        </div>
+
+
+        <!-- SUMMARY CARDS -->
+
+        <div class="admin-stats">
+
+            <div class="admin-stat">
+                <p>Total Analytics Reports</p>
+                <h2 id="totalReports">0</h2>
+                <small>Generated reports</small>
+            </div>
+
+            <div class="admin-stat">
+                <p>Total Coffee Waste</p>
+                <h2 id="totalCoffee">0 kg</h2>
+                <small>Coffee waste collected</small>
+            </div>
+
+            <div class="admin-stat">
+                <p>Total Surplus Food</p>
+                <h2 id="totalSurplus">0 kg</h2>
+                <small>Surplus food recorded</small>
+            </div>
+
+            <div class="admin-stat">
+                <p>Successful Pickups</p>
+                <h2 id="successfulPickups">0</h2>
+                <small>Successfully completed</small>
+            </div>
+
+            <div class="admin-stat">
+                <p>Failed Pickups</p>
+                <h2 id="failedPickups">0</h2>
+                <small>Unsuccessful pickups</small>
+            </div>
+
+            <div class="admin-stat">
+                <p>Estimated Carbon Savings</p>
+                <h2 id="carbonSavings">0 kg</h2>
+                <small>Estimated environmental savings</small>
+            </div>
+
+        </div>
+
+
+        <!-- QUICK ACCESS -->
+
+        <section class="admin-section">
+
+            <h2>Quick Access</h2>
+
+            <p class="section-description">
+                Access report management and tracking information.
+            </p>
+
+            <div class="quick-links">
+
+                <a href="/admin/analytics-report.html"
+                   class="quick-link">
+
+                    <strong>📊 Analytics Report</strong>
+
+                    <small>
+                        Generate and view analytics reports.
+                    </small>
+
+                </a>
+
+                <a href="/admin/tracking-report.html"
+                   class="quick-link">
+
+                    <strong>📍 Tracking Report</strong>
+
+                    <small>
+                        Monitor pickup tracking and carbon savings.
+                    </small>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT ANALYTICS REPORTS -->
+
+        <section class="admin-section">
+
+            <h2>Recent Analytics Reports</h2>
+
+            <p class="section-description">
+                Latest reports generated in Waste2Worth.
+            </p>
+
+            <div class="admin-table-wrap">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Report Type</th>
+                            <th>Period</th>
+                            <th>Coffee Waste</th>
+                            <th>Surplus Food</th>
+                            <th>Generated At</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="analyticsTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT TRACKING RECORDS -->
+
+        <section class="admin-section">
+
+            <h2>Recent Tracking Records</h2>
+
+            <p class="section-description">
+                Overview of pickup tracking activities.
+            </p>
+
+            <div class="admin-table-wrap">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Tracking ID</th>
+                            <th>Pickup ID</th>
+                            <th>Type</th>
+                            <th>Actual Quantity</th>
+                            <th>Tracking Date</th>
+                            <th>Diversion Status</th>
+                            <th>Carbon Savings</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="trackingTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <p class="subtitle">
+            Waste2Worth Administration System
+        </p>
+
+    </main>
+
+</div>
+
+
+<script>
+
+// ======================================
+// ADMIN SESSION
+// ======================================
+
+let currentUser = {};
+
+try {
+    currentUser = JSON.parse(
+        sessionStorage.getItem('w2wUser')
+    ) || {};
+} catch (error) {
+    currentUser = {};
+}
+
+document.getElementById('adminName').textContent =
+    currentUser.fullName || 'Demo Administrator';
+
+
+// ======================================
+// DUMMY ANALYTICS_REPORT DATA
+// Based on ERD
+// ======================================
+
+const analyticsReports = [
+
+    {
+        ReportID: 1,
+        ReportType: 'Monthly Report',
+        PeriodStartDate: '2026-10-01',
+        PeriodEndDate: '2026-10-31',
+        TotalCoffeeWaste: 50,
+        TotalSurplusFood: 120,
+        SuccessfulPickupCount: 25,
+        FailedPickupCount: 2,
+        GeneratedAt: '2026-11-01',
+        StaffID: 999
+    },
+
+    {
+        ReportID: 2,
+        ReportType: 'Monthly Report',
+        PeriodStartDate: '2026-11-01',
+        PeriodEndDate: '2026-11-30',
+        TotalCoffeeWaste: 75,
+        TotalSurplusFood: 230,
+        SuccessfulPickupCount: 61,
+        FailedPickupCount: 2,
+        GeneratedAt: '2026-11-23',
+        StaffID: 999
+    }
+
+];
+
+
+// ======================================
+// DUMMY TRACKING_REPORT DATA
+// Based on ERD
+// ======================================
+
+const trackingReports = [
+
+    {
+        TrackingID: 1,
+        Type: 'Food',
+        ActualQuantity: 20,
+        TrackingDateTime: '2026-11-20 10:30',
+        DiversionStatus: 'Successful',
+        EstimatedCarbonSavings: 12,
+        PickupID: 101
+    },
+
+    {
+        TrackingID: 2,
+        Type: 'Coffee',
+        ActualQuantity: 10,
+        TrackingDateTime: '2026-11-21 11:00',
+        DiversionStatus: 'Successful',
+        EstimatedCarbonSavings: 8,
+        PickupID: 102
+    },
+
+    {
+        TrackingID: 3,
+        Type: 'Food',
+        ActualQuantity: 15,
+        TrackingDateTime: '2026-11-22 14:00',
+        DiversionStatus: 'Pending',
+        EstimatedCarbonSavings: 5,
+        PickupID: 103
+    }
+
+];
+
+
+// ======================================
+// CALCULATE DASHBOARD SUMMARY
+// ======================================
+
+function loadDashboard() {
+
+    const totalCoffee = analyticsReports.reduce(
+        (sum, report) => sum + report.TotalCoffeeWaste,
+        0
+    );
+
+    const totalSurplus = analyticsReports.reduce(
+        (sum, report) => sum + report.TotalSurplusFood,
+        0
+    );
+
+    const successfulPickups = analyticsReports.reduce(
+        (sum, report) => sum + report.SuccessfulPickupCount,
+        0
+    );
+
+    const failedPickups = analyticsReports.reduce(
+        (sum, report) => sum + report.FailedPickupCount,
+        0
+    );
+
+    const carbonSavings = trackingReports.reduce(
+        (sum, report) => sum + report.EstimatedCarbonSavings,
+        0
+    );
+
+    document.getElementById('totalReports').textContent =
+        analyticsReports.length;
+
+    document.getElementById('totalCoffee').textContent =
+        totalCoffee + ' kg';
+
+    document.getElementById('totalSurplus').textContent =
+        totalSurplus + ' kg';
+
+    document.getElementById('successfulPickups').textContent =
+        successfulPickups;
+
+    document.getElementById('failedPickups').textContent =
+        failedPickups;
+
+    document.getElementById('carbonSavings').textContent =
+        carbonSavings + ' kg';
+
+}
+
+
+// ======================================
+// DISPLAY ANALYTICS REPORTS
+// ======================================
+
+function renderAnalyticsReports() {
+
+    const table = document.getElementById('analyticsTable');
+
+    table.innerHTML = analyticsReports.map(report => `
+
+        <tr>
+
+            <td>#AR${report.ReportID}</td>
+
+            <td>${report.ReportType}</td>
+
+            <td>
+                ${report.PeriodStartDate}
+                <br>
+                to ${report.PeriodEndDate}
+            </td>
+
+            <td>${report.TotalCoffeeWaste} kg</td>
+
+            <td>${report.TotalSurplusFood} kg</td>
+
+            <td>${report.GeneratedAt}</td>
+
+        </tr>
+
+    `).join('');
+
+}
+
+
+// ======================================
+// DISPLAY TRACKING REPORTS
+// ======================================
+
+function renderTrackingReports() {
+
+    const table = document.getElementById('trackingTable');
+
+    table.innerHTML = trackingReports.map(record => {
+
+        const statusClass =
+            record.DiversionStatus === 'Successful'
+                ? 'report-status'
+                : 'tracking-status';
+
+        return `
+
+            <tr>
+
+                <td>#TRK${record.TrackingID}</td>
+
+                <td>#${record.PickupID}</td>
+
+                <td>${record.Type}</td>
+
+                <td>${record.ActualQuantity} kg</td>
+
+                <td>${record.TrackingDateTime}</td>
+
+                <td>
+                    <span class="${statusClass}">
+                        ${record.DiversionStatus}
+                    </span>
+                </td>
+
+                <td>${record.EstimatedCarbonSavings} kg</td>
+
+            </tr>
+
+        `;
+
+    }).join('');
+
+}
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+document.getElementById('logoutBtn')
+    .addEventListener('click', function(event) {
+
+        event.preventDefault();
+
+        sessionStorage.removeItem('w2wUser');
+
+        window.location.href = '/login.html';
+
+    });
+
+
+// ======================================
+// INITIALIZE DASHBOARD
+// ======================================
+
+loadDashboard();
+
+renderAnalyticsReports();
+
+renderTrackingReports();
+
+</script>
+
+</body>
+</html>

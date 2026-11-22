@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Branch Dashboard | Waste2Worth</title>
+
+<link rel="stylesheet" href="/assets/style.css">
+
+<style>
+.branch-info {
+    background: var(--sage);
+    padding: 13px;
+    border-radius: 10px;
+    margin: 27px 0 23px;
+    font-size: 13px;
+}
+
+.branch-info small {
+    display: block;
+    color: var(--muted);
+    margin-top: 5px;
+}
+
+.branch-welcome {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.branch-welcome h2 {
+    margin-bottom: 8px;
+}
+
+.branch-welcome p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media(max-width:850px) {
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media(max-width:600px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Waste2Worth
+            <small>GIVING WASTE A PURPOSE</small>
+        </div>
+
+        <div class="branch-info">
+            <b id="staffName">Branch Staff</b>
+            <small id="branchDetails">Branch Workspace · Demo</small>
+        </div>
+
+        <div class="nav-label">BRANCH MENU</div>
+
+        <a class="nav-btn active"
+           href="/branch/branch-dashboard.html">
+            🏠 <span>Dashboard</span>
+        </a>
+
+        <a class="nav-btn" href="#"
+           onclick="showDemo('Food Preparation')">
+            🍱 <span>Food Preparation</span>
+        </a>
+
+        <a class="nav-btn" href="#"
+           onclick="showDemo('Transfer Food')">
+            📤 <span>Transfer Food</span>
+        </a>
+
+        <a class="nav-btn" href="#"
+           onclick="showDemo('Transfer History')">
+            📋 <span>Transfer History</span>
+        </a>
+
+        <a class="nav-btn logout" href="#" id="logoutBtn">
+            ↪ <span>Logout</span>
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+                <b>Waste2Worth Branch Workspace</b><br>
+                <small>Branch Staff Management</small>
+            </div>
+
+            <span class="tag">DEMO MODE</span>
+
+        </div>
+
+
+        <!-- PAGE HEADING -->
+
+        <h1>Branch Dashboard</h1>
+
+        <p class="subtitle">
+            Welcome to your branch workspace.
+        </p>
+
+
+        <!-- WELCOME -->
+
+        <div class="branch-welcome">
+
+            <h2>Welcome, <span id="welcomeName">Branch Staff</span>!</h2>
+
+            <p>
+                Manage food preparation and monitor food transfers
+                from your branch to the main hub.
+            </p>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="stats">
+
+            <div class="card">
+                <div class="stat-title">Food Prepared</div>
+                <div class="stat-number">25</div>
+                <div class="stat-note">Sample data</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-title">Transfers Sent</div>
+                <div class="stat-number">8</div>
+                <div class="stat-note">Sample data</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-title">Pending Transfers</div>
+                <div class="stat-number">2</div>
+                <div class="stat-note">Awaiting hub confirmation</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-title">Completed Transfers</div>
+                <div class="stat-number">6</div>
+                <div class="stat-note">Successfully received</div>
+            </div>
+
+        </div>
+
+
+        <!-- QUICK ACTIONS -->
+
+        <div class="panel">
+
+            <h2>Quick Actions</h2>
+
+            <p class="subtitle">
+                Choose an activity to continue.
+            </p>
+
+            <div class="actions">
+
+                <button class="btn"
+                    onclick="showDemo('Food Preparation')">
+                    + Prepare Food
+                </button>
+
+                <button class="btn btn-light"
+                    onclick="showDemo('Transfer Food to Hub')">
+                    Transfer Food to Hub
+                </button>
+
+                <button class="btn btn-light"
+                    onclick="showDemo('Transfer History')">
+                    View Transfer History
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- RECENT TRANSFERS -->
+
+        <div class="panel">
+
+            <h2>Recent Transfer Activities</h2>
+
+            <p class="subtitle">
+                Overview of recent transfers from your branch.
+            </p>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Transfer ID</th>
+                            <th>Food Item</th>
+                            <th>Quantity</th>
+                            <th>Destination</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="transferTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <div class="notice">
+            <b>Demo Mode:</b>
+            This Branch Staff interface uses sample data only.
+            Branch operations are not connected to the database yet.
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+// ==================================
+// GET CURRENT DEMO BRANCH USER
+// ==================================
+
+let currentUser = {};
+
+try {
+
+    currentUser = JSON.parse(
+        sessionStorage.getItem('w2wUser')
+    ) || {};
+
+} catch (error) {
+
+    currentUser = {};
+
+}
+
+
+// Display staff information
+
+document.getElementById('staffName').textContent =
+    currentUser.fullName || 'Demo Branch Staff';
+
+document.getElementById('welcomeName').textContent =
+    currentUser.fullName || 'Branch Staff';
+
+document.getElementById('branchDetails').textContent =
+    'Branch ID: ' + (currentUser.branchID || 'BR001');
+
+
+// ==================================
+// DUMMY TRANSFER DATA
+// ==================================
+
+const transfers = [
+
+    {
+        id: 'TR001',
+        item: 'Sandwich',
+        quantity: '20 packs',
+        destination: 'Main Hub',
+        status: 'Sent'
+    },
+
+    {
+        id: 'TR002',
+        item: 'Bread',
+        quantity: '15 packs',
+        destination: 'Main Hub',
+        status: 'Pending'
+    },
+
+    {
+        id: 'TR003',
+        item: 'Rice Meal',
+        quantity: '10 packs',
+        destination: 'Main Hub',
+        status: 'Completed'
+    },
+
+    {
+        id: 'TR004',
+        item: 'Coffee Grounds',
+        quantity: '5 kg',
+        destination: 'Main Hub',
+        status: 'Completed'
+    }
+
+];
+
+
+// ==================================
+// DISPLAY TRANSFER RECORDS
+// ==================================
+
+function loadTransfers() {
+
+    const table = document.getElementById('transferTable');
+
+    table.innerHTML = transfers.map(transfer => {
+
+        let statusClass = 'status-yellow';
+
+        if (transfer.status === 'Sent' ||
+            transfer.status === 'Completed') {
+
+            statusClass = 'status-green';
+
+        }
+
+        return `
+            <tr>
+                <td>${transfer.id}</td>
+                <td>${transfer.item}</td>
+                <td>${transfer.quantity}</td>
+                <td>${transfer.destination}</td>
+                <td>
+                    <span class="status ${statusClass}">
+                        ${transfer.status}
+                    </span>
+                </td>
+            </tr>
+        `;
+
+    }).join('');
+
+}
+
+
+// ==================================
+// DEMO ACTIONS
+// ==================================
+
+function showDemo(feature) {
+
+    alert(
+        feature +
+        ' interface is currently in Demo Mode. ' +
+        'This feature will be developed next.'
+    );
+
+}
+
+
+// ==================================
+// LOGOUT
+// ==================================
+
+document.getElementById('logoutBtn')
+    .addEventListener('click', function(event) {
+
+        event.preventDefault();
+
+        sessionStorage.removeItem('w2wUser');
+
+        window.location.href = '/login.html';
+
+    });
+
+
+// ==================================
+// INITIALIZE
+// ==================================
+
+loadTransfers();
+
+</script>
+
+</body>
+</html>

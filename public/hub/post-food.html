@@ -1,0 +1,986 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Surplus Food | Waste2Worth</title>
+    <link rel="stylesheet" href="/assets/style.css">
+
+    <style>
+        .photo-upload {
+            border: 2px dashed #C9DCCF;
+            border-radius: 12px;
+            padding: 22px;
+            background: #F8FBF8;
+            text-align: center;
+        }
+
+        .photo-upload input {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .photo-preview {
+            display: none;
+            width: 180px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 15px auto 0;
+            border: 1px solid #DDE6DF;
+        }
+
+        .readonly-field {
+            background: #F1F5F2 !important;
+            color: #52665B;
+            cursor: not-allowed;
+        }
+
+        .message-success {
+            color: #167044;
+            font-weight: 600;
+        }
+
+        .message-error {
+            color: #B42318;
+            font-weight: 600;
+        }
+
+        .small-note {
+            color: #788B80;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .required-note {
+            color: #B42318;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Waste2Worth
+            <small>GIVING WASTE A PURPOSE</small>
+        </div>
+
+        <div class="profile">
+            <b id="sidebarName">Hub Staff</b>
+            <small id="sidebarRole">Hub Staff Workspace</small>
+        </div>
+
+        <div class="nav-label">MAIN MENU</div>
+
+        <a class="nav-btn" href="/hub/hub-dashboard.html">
+            🏠 <span>Dashboard</span>
+        </a>
+
+        <a class="nav-btn" href="/hub/quality-check.html">
+            🔍 <span>Quality Check</span>
+        </a>
+
+        <a class="nav-btn active" href="/hub/post-food.html">
+            ➕ <span>Post Surplus Food</span>
+        </a>
+
+        <a class="nav-btn" href="/hub/food-listings.html">
+            📦 <span>Surplus Listings</span>
+        </a>
+
+        <a class="nav-btn logout" href="/" onclick="logout()">
+            ↪ <span>Back to Homepage</span>
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+                <b>Waste2Worth Management</b><br>
+                <small>Hub Staff Workspace</small>
+            </div>
+
+            <span class="tag">LIVE DATABASE</span>
+
+        </div>
+
+
+        <h1>Post Surplus Food</h1>
+
+        <p class="subtitle">
+            Publish food items that have passed the quality inspection.
+        </p>
+
+
+        <div class="notice">
+            Select a Quality Check record first. Food name, category and
+            quantity will automatically follow the inspection record.
+        </div>
+
+
+        <div class="panel">
+
+            <h2>New Food Listing</h2>
+
+            <form id="postForm" enctype="multipart/form-data">
+
+                <div class="grid">
+
+                    <!-- QUALITY CHECK -->
+
+                    <div class="field">
+
+                        <label>Quality Check Record *</label>
+
+                        <select id="qualityID" required>
+                            <option value="">Loading quality records...</option>
+                        </select>
+
+                        <small class="small-note">
+                            Only passed and partially passed records are available.
+                        </small>
+
+                    </div>
+
+
+                    <!-- FOOD NAME -->
+
+                    <div class="field">
+
+                        <label>Food Name *</label>
+
+                        <input
+                            type="text"
+                            id="foodName"
+                            class="readonly-field"
+                            readonly
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CATEGORY -->
+
+                    <div class="field">
+
+                        <label>Food Category *</label>
+
+                        <input
+                            type="text"
+                            id="foodCategory"
+                            class="readonly-field"
+                            readonly
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- QUANTITY -->
+
+                    <div class="field">
+
+                        <label>Quantity Passed *</label>
+
+                        <input
+                            type="number"
+                            id="quantity"
+                            class="readonly-field"
+                            readonly
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PREPARATION DATE -->
+
+                    <div class="field">
+
+                        <label>Preparation Date & Time</label>
+
+                        <input
+                            type="datetime-local"
+                            id="preparationDateTime"
+                        >
+
+                    </div>
+
+
+                    <!-- EXPIRY DATE -->
+
+                    <div class="field">
+
+                        <label>Expiry Date & Time</label>
+
+                        <input
+                            type="datetime-local"
+                            id="expiryDateTime"
+                        >
+
+                    </div>
+
+
+                    <!-- LAST PICKUP -->
+
+                    <div class="field">
+
+                        <label>Last Pickup Time</label>
+
+                        <input
+                            type="datetime-local"
+                            id="lastPickupTime"
+                        >
+
+                    </div>
+
+
+                    <!-- FOOD SAFETY TAG -->
+
+                    <div class="field">
+
+                        <label>Food Safety Tag</label>
+
+                        <select id="foodSafetyTag">
+
+                            <option value="">Select safety tag</option>
+
+                            <option value="Freshly Prepared">
+                                Freshly Prepared
+                            </option>
+
+                            <option value="Keep Refrigerated">
+                                Keep Refrigerated
+                            </option>
+
+                            <option value="Ready to Eat">
+                                Ready to Eat
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ALLERGEN -->
+
+                    <div class="field">
+
+                        <label>Allergen Information</label>
+
+                        <input
+                            type="text"
+                            id="allergenInfo"
+                            placeholder="e.g. Milk, Eggs, Nuts"
+                        >
+
+                    </div>
+
+
+                    <!-- STAFF ID -->
+
+                    <div class="field">
+
+                        <label>Staff ID *</label>
+
+                        <input
+                            type="text"
+                            id="staffID"
+                            class="readonly-field"
+                            readonly
+                            required
+                        >
+
+                        <small class="small-note">
+                            Automatically assigned based on the logged-in account.
+                        </small>
+
+                    </div>
+
+
+                    <!-- FOOD PHOTO UPLOAD -->
+
+                    <div class="field">
+
+                        <label>
+                            Upload Food Photo
+                            <span class="required-note">*</span>
+                        </label>
+
+                        <div class="photo-upload">
+
+                            <div style="font-size:30px;">📷</div>
+
+                            <b>Select Food Image</b>
+
+                            <p class="small-note">
+                                Upload JPG, JPEG, PNG or WEBP.
+                                Maximum size: 5MB.
+                            </p>
+
+                            <input
+                                type="file"
+                                id="foodPhoto"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                required
+                            >
+
+                            <img
+                                id="photoPreview"
+                                class="photo-preview"
+                                alt="Food photo preview"
+                            >
+
+                            <p id="photoName" class="small-note"></p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTION BUTTONS -->
+
+                <div class="actions">
+
+                    <button
+                        type="submit"
+                        class="btn"
+                        id="publishButton"
+                    >
+                        Publish Food Listing
+                    </button>
+
+                    <button
+                        type="reset"
+                        class="btn btn-light"
+                    >
+                        Clear Form
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <p id="message" class="subtitle"></p>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    // ======================================
+    // CURRENT LOGGED-IN USER
+    // ======================================
+
+    let currentUser = null;
+
+    try {
+
+        currentUser = JSON.parse(
+            sessionStorage.getItem('w2wUser') || 'null'
+        );
+
+    } catch (error) {
+
+        currentUser = null;
+
+    }
+
+
+    // Check login session
+
+    if (!currentUser || !currentUser.staffID) {
+
+        alert('Please log in before accessing this page.');
+
+        window.location.href = '/login.html';
+
+    }
+
+
+    // Only Hub Staff can access this page
+
+    const currentRole = String(currentUser?.role || '')
+        .trim()
+        .toLowerCase();
+
+    if (
+        currentRole !== 'hubstaff' &&
+        currentRole !== 'hub staff' &&
+        currentRole !== 'admin'
+    ) {
+
+        alert('You are not authorised to access this page.');
+
+        window.location.href = '/login.html';
+
+    }
+
+
+    // Display current staff information
+
+    document.getElementById('staffID').value =
+        currentUser.staffID;
+
+    document.getElementById('sidebarName').textContent =
+        currentUser.fullName || 'Hub Staff';
+
+    document.getElementById('sidebarRole').textContent =
+        currentUser.role || 'Hub Staff Workspace';
+
+
+    // ======================================
+    // ELEMENTS
+    // ======================================
+
+    const form = document.getElementById('postForm');
+
+    const qualitySelect = document.getElementById('qualityID');
+
+    const message = document.getElementById('message');
+
+    const photoInput = document.getElementById('foodPhoto');
+
+    const photoPreview = document.getElementById('photoPreview');
+
+    const photoName = document.getElementById('photoName');
+
+    const publishButton = document.getElementById('publishButton');
+
+    let qualityRecords = [];
+
+    let previewURL = null;
+
+
+    // ======================================
+    // DISPLAY MESSAGE
+    // ======================================
+
+    function showMessage(text, type) {
+
+        message.textContent = text;
+
+        message.className =
+            type === 'success'
+                ? 'subtitle message-success'
+                : 'subtitle message-error';
+
+    }
+
+
+    // ======================================
+    // ESCAPE HTML
+    // ======================================
+
+    function escapeHTML(value) {
+
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+
+        })[char]);
+
+    }
+
+
+    // ======================================
+    // LOAD QUALITY CHECK RECORDS
+    // ======================================
+
+    async function loadQualityRecords() {
+
+        try {
+
+            qualitySelect.innerHTML =
+                '<option value="">Loading quality records...</option>';
+
+            const response = await fetch('/api/quality-check');
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Unable to load quality check records.'
+                );
+
+            }
+
+            const result = await response.json();
+
+            qualityRecords = Array.isArray(result)
+                ? result
+                : (result.data || result.recordset || []);
+
+            // Only records that have passed quantity
+            // and have not been fully rejected.
+
+            const eligibleRecords = qualityRecords.filter(item => {
+
+                const status = String(item.QualityStatus || '')
+                    .trim()
+                    .toLowerCase();
+
+                return (
+                    Number(item.QuantityPassed) > 0 &&
+                    status !== 'rejected'
+                );
+
+            });
+
+
+            qualitySelect.innerHTML =
+                '<option value="">Select Quality Check</option>';
+
+
+            eligibleRecords.forEach(item => {
+
+                const option = document.createElement('option');
+
+                option.value = item.QualityID;
+
+                option.textContent =
+                    `#QC${item.QualityID} - ${item.ItemName} (${item.QuantityPassed} passed)`;
+
+                qualitySelect.appendChild(option);
+
+            });
+
+
+            if (eligibleRecords.length === 0) {
+
+                qualitySelect.innerHTML =
+                    '<option value="">No eligible quality records found</option>';
+
+            }
+
+        }
+
+        catch (error) {
+
+            qualitySelect.innerHTML =
+                '<option value="">Unable to load records</option>';
+
+            showMessage(error.message, 'error');
+
+        }
+
+    }
+
+
+    // ======================================
+    // AUTO-FILL FOOD INFORMATION
+    // ======================================
+
+    qualitySelect.addEventListener('change', function() {
+
+        const selectedID = Number(this.value);
+
+        const selectedRecord = qualityRecords.find(item =>
+            Number(item.QualityID) === selectedID
+        );
+
+
+        document.getElementById('foodName').value =
+            selectedRecord ? selectedRecord.ItemName : '';
+
+
+        document.getElementById('foodCategory').value =
+            selectedRecord ? selectedRecord.Category : '';
+
+
+        document.getElementById('quantity').value =
+            selectedRecord ? selectedRecord.QuantityPassed : '';
+
+
+        // Use preparation date from Quality Check if available
+
+        const preparationInput =
+            document.getElementById('preparationDateTime');
+
+        if (selectedRecord && selectedRecord.PreparationDateTime) {
+
+            preparationInput.value =
+                String(selectedRecord.PreparationDateTime).slice(0, 16);
+
+        } else {
+
+            preparationInput.value = '';
+
+        }
+
+    });
+
+
+    // ======================================
+    // FOOD PHOTO PREVIEW
+    // ======================================
+
+    photoInput.addEventListener('change', function() {
+
+        const file = this.files[0];
+
+        if (previewURL) {
+
+            URL.revokeObjectURL(previewURL);
+
+            previewURL = null;
+
+        }
+
+        photoPreview.style.display = 'none';
+
+        photoName.textContent = '';
+
+
+        if (!file) return;
+
+
+        const allowedTypes = [
+
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+
+        ];
+
+
+        if (!allowedTypes.includes(file.type)) {
+
+            alert('Please upload JPG, JPEG, PNG or WEBP only.');
+
+            this.value = '';
+
+            return;
+
+        }
+
+
+        if (file.size > 5 * 1024 * 1024) {
+
+            alert('Image size must not exceed 5MB.');
+
+            this.value = '';
+
+            return;
+
+        }
+
+
+        previewURL = URL.createObjectURL(file);
+
+        photoPreview.src = previewURL;
+
+        photoPreview.style.display = 'block';
+
+        photoName.textContent = file.name;
+
+    });
+
+
+    // ======================================
+    // RESET FORM
+    // ======================================
+
+    form.addEventListener('reset', function() {
+
+        setTimeout(() => {
+
+            document.getElementById('staffID').value =
+                currentUser.staffID;
+
+            photoPreview.style.display = 'none';
+
+            photoName.textContent = '';
+
+            if (previewURL) {
+
+                URL.revokeObjectURL(previewURL);
+
+                previewURL = null;
+
+            }
+
+            message.textContent = '';
+
+        }, 0);
+
+    });
+
+
+    // ======================================
+    // PUBLISH FOOD LISTING
+    // ======================================
+
+    form.addEventListener('submit', async function(event) {
+
+        event.preventDefault();
+
+
+        const selectedID = Number(qualitySelect.value);
+
+        const selectedRecord = qualityRecords.find(item =>
+            Number(item.QualityID) === selectedID
+        );
+
+
+        if (!selectedRecord) {
+
+            showMessage(
+                'Please select an eligible Quality Check record.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        if (Number(selectedRecord.QuantityPassed) <= 0) {
+
+            showMessage(
+                'Selected quality record has no passed quantity.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        const photoFile = photoInput.files[0];
+
+        if (!photoFile) {
+
+            showMessage(
+                'Please upload a food photo.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        const preparation =
+            document.getElementById('preparationDateTime').value;
+
+        const expiry =
+            document.getElementById('expiryDateTime').value;
+
+        const pickup =
+            document.getElementById('lastPickupTime').value;
+
+
+        // Check dates
+
+        if (
+            expiry &&
+            preparation &&
+            new Date(expiry) < new Date(preparation)
+        ) {
+
+            showMessage(
+                'Expiry date cannot be earlier than preparation date.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        if (
+            pickup &&
+            expiry &&
+            new Date(pickup) > new Date(expiry)
+        ) {
+
+            showMessage(
+                'Last pickup time cannot be later than expiry time.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        // ==================================
+        // SEND MULTIPART FORM DATA
+        // ==================================
+
+        const formData = new FormData();
+
+
+        formData.append(
+            'FoodName',
+            selectedRecord.ItemName
+        );
+
+
+        formData.append(
+            'FoodCategory',
+            selectedRecord.Category
+        );
+
+
+        formData.append(
+            'FoodSafetyTag',
+            document.getElementById('foodSafetyTag').value
+        );
+
+
+        formData.append(
+            'AllergenInfo',
+            document.getElementById('allergenInfo').value
+        );
+
+
+        // Actual image file
+
+        formData.append(
+            'FoodPhoto',
+            photoFile
+        );
+
+
+        formData.append(
+            'PreparationDateTime',
+            preparation
+        );
+
+
+        formData.append(
+            'ExpiryDateTime',
+            expiry
+        );
+
+
+        formData.append(
+            'LastPickupTime',
+            pickup
+        );
+
+
+        formData.append(
+            'QualityID',
+            selectedRecord.QualityID
+        );
+
+
+        // Staff ID comes from the login session
+
+        formData.append(
+            'StaffID',
+            currentUser.staffID
+        );
+
+
+        try {
+
+            publishButton.disabled = true;
+
+            publishButton.textContent = 'Publishing...';
+
+            showMessage(
+                'Uploading food photo and publishing listing...',
+                'success'
+            );
+
+
+            const response = await fetch('/api/food-listing', {
+
+                method: 'POST',
+
+                body: formData
+
+            });
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message || 'Unable to publish food listing.'
+                );
+
+            }
+
+
+            showMessage(
+                'Food listing published successfully!',
+                'success'
+            );
+
+
+            form.reset();
+
+            await loadQualityRecords();
+
+
+        }
+
+        catch (error) {
+
+            showMessage(error.message, 'error');
+
+        }
+
+        finally {
+
+            publishButton.disabled = false;
+
+            publishButton.textContent = 'Publish Food Listing';
+
+        }
+
+    });
+
+
+    // ======================================
+    // LOGOUT
+    // ======================================
+
+    function logout() {
+
+        sessionStorage.removeItem('w2wUser');
+
+    }
+
+
+    // ======================================
+    // INITIAL LOAD
+    // ======================================
+
+    loadQualityRecords();
+
+</script>
+
+</body>
+</html>

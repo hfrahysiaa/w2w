@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Claims | Waste2Worth</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <h2>Waste2Worth</h2>
+            <p class="sidebar-subtitle">Receiver Portal</p>
+
+            <nav>
+                <a href="receiver-dashboard.html">Dashboard</a>
+                <a href="available-food.html">Available Food</a>
+                <a class="active" href="my-claims.html">My Claims</a>
+                <a href="../index.html">Back to Home</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div>
+                    <h1>My Claims</h1>
+                    <p>View the food items you have claimed.</p>
+                </div>
+                <span class="badge">Demo Mode</span>
+            </div>
+
+            <section class="stats-grid">
+                <div class="card stat-card">
+                    <p>Total Claims</p>
+                    <h2 id="totalClaims">0</h2>
+                </div>
+
+                <div class="card stat-card">
+                    <p>Pending</p>
+                    <h2 id="pendingClaims">0</h2>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Claim History</h2>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Food Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Claim Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="claimsTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <p class="demo-notice">
+                Demo Mode: Claim records are saved in this browser only.
+                They are not stored in the Waste2Worth database.
+            </p>
+        </main>
+    </div>
+
+    <script>
+        function loadClaims() {
+            const claims = JSON.parse(
+                localStorage.getItem('w2wDemoClaims') || '[]'
+            );
+
+            const table = document.getElementById('claimsTable');
+
+            document.getElementById('totalClaims').textContent =
+                claims.length;
+
+            document.getElementById('pendingClaims').textContent =
+                claims.filter(claim => claim.status === 'Pending').length;
+
+            table.innerHTML = '';
+
+            if (claims.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5">
+                            You have not claimed any food items yet.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            claims.forEach(claim => {
+                const row = document.createElement('tr');
+
+                const cells = [
+                    claim.name,
+                    claim.category,
+                    claim.quantity,
+                    claim.claimDate,
+                    claim.status
+                ];
+
+                cells.forEach(value => {
+                    const cell = document.createElement('td');
+                    cell.textContent = value || '-';
+                    row.appendChild(cell);
+                });
+
+                table.appendChild(row);
+            });
+        }
+
+        loadClaims();
+    </script>
+</body>
+</html>

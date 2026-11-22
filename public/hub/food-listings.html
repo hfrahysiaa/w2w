@@ -1,0 +1,551 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surplus Listings | Waste2Worth</title>
+<link rel="stylesheet" href="/assets/style.css">
+
+<style>
+.listing-photo {
+    width: 75px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 9px;
+    border: 1px solid #dce7df;
+}
+
+.no-photo {
+    width: 75px;
+    height: 65px;
+    border-radius: 9px;
+    background: #edf3ed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #66816e;
+    font-size: 12px;
+}
+
+.item-name {
+    font-weight: 600;
+    color: #174f3e;
+}
+
+.item-type {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #edf5ed;
+    color: #27664d;
+    font-size: 12px;
+}
+
+.empty {
+    text-align: center;
+    padding: 25px;
+    color: #829087;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Waste2Worth
+        <small>GIVING WASTE A PURPOSE</small>
+    </div>
+
+    <div class="profile">
+        <b>Hub Staff</b>
+        <small>Hub Staff Workspace</small>
+    </div>
+
+    <div class="nav-label">MAIN MENU</div>
+
+    <a class="nav-btn" href="/hub/hub-dashboard.html">
+        🏠 <span>Dashboard</span>
+    </a>
+
+    <a class="nav-btn" href="/hub/quality-check.html">
+        🔍 <span>Quality Check</span>
+    </a>
+
+    <a class="nav-btn" href="/hub/post-food.html">
+        ➕ <span>Post Surplus Item</span>
+    </a>
+
+    <a class="nav-btn active" href="/hub/food-listings.html">
+        📦 <span>Surplus Listings</span>
+    </a>
+
+    <a class="nav-btn logout" href="/">
+        ↪ <span>Back to Homepage</span>
+    </a>
+
+</aside>
+
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div>
+            <b>Waste2Worth Management</b><br>
+            <small>Hub Staff Workspace</small>
+        </div>
+
+        <span class="tag">LIVE DATABASE</span>
+
+    </div>
+
+
+    <h1>Surplus Listings</h1>
+
+    <p class="subtitle">
+        View and manage surplus food and coffee waste published by your hub.
+    </p>
+
+
+    <!-- SUMMARY CARDS -->
+
+    <div class="stats">
+
+        <div class="card">
+            <div class="stat-title">Total Listings</div>
+            <div class="stat-number" id="totalListings">0</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">Available</div>
+            <div class="stat-number" id="availableListings">0</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">Claimed</div>
+            <div class="stat-number" id="claimedListings">0</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">Completed</div>
+            <div class="stat-number" id="completedListings">0</div>
+        </div>
+
+    </div>
+
+
+    <!-- ALL SURPLUS ITEMS -->
+
+    <div class="panel">
+
+        <h2>All Surplus Items</h2>
+
+        <p class="subtitle">
+            Food and coffee waste items that have passed quality inspection.
+        </p>
+
+
+        <!-- SEARCH AND FILTER -->
+
+        <div class="grid">
+
+            <div class="field">
+
+                <label>Search Item</label>
+
+                <input
+                    type="text"
+                    id="searchItem"
+                    placeholder="Search by item name..."
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>Filter Item Type</label>
+
+                <select id="typeFilter">
+
+                    <option value="">All Types</option>
+
+                    <option value="Food">Food</option>
+
+                    <option value="Coffee">Coffee</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="actions">
+
+            <button
+                class="btn btn-light"
+                onclick="loadListings()"
+            >
+                ↻ Refresh Listings
+            </button>
+
+
+            <a
+                href="/hub/post-food.html"
+                class="btn"
+            >
+                + Post New Item
+            </a>
+
+        </div>
+
+
+        <br>
+
+
+        <!-- LISTING TABLE -->
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Photo</th>
+                        <th>Item ID</th>
+                        <th>Item Name</th>
+                        <th>Item Type</th>
+                        <th>Quantity</th>
+                        <th>Expiry Date</th>
+                        <th>Last Pickup</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="listingRecords">
+
+                    <tr>
+                        <td colspan="8">
+                            Loading surplus listings...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <p id="message" class="subtitle"></p>
+
+    </div>
+
+</main>
+
+</div>
+
+
+<script>
+
+let allListings = [];
+
+
+// ===================================
+// ESCAPE HTML
+// ===================================
+
+function escapeHTML(value) {
+
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+
+    })[char]);
+
+}
+
+
+// ===================================
+// FORMAT DATE
+// ===================================
+
+function formatDate(value) {
+
+    if (!value) return '—';
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) return '—';
+
+    return date.toLocaleString();
+
+}
+
+
+// ===================================
+// STATUS BADGE
+// ===================================
+
+function statusBadge(status) {
+
+    let css = 'status-yellow';
+
+    if (status === 'Available') css = 'status-green';
+
+    if (status === 'Expired') css = 'status-red';
+
+    if (status === 'Completed') css = 'status-green';
+
+    return `
+        <span class="status ${css}">
+            ${escapeHTML(status || 'Unknown')}
+        </span>
+    `;
+
+}
+
+
+// ===================================
+// ITEM PHOTO
+// ===================================
+
+function displayPhoto(photo) {
+
+    if (!photo) {
+
+        return `
+            <div class="no-photo">
+                No Photo
+            </div>
+        `;
+
+    }
+
+    // Only allow local upload paths or HTTPS image URLs
+    const safePhoto = String(photo);
+
+    if (
+        !safePhoto.startsWith('/uploads/') &&
+        !safePhoto.startsWith('https://')
+    ) {
+
+        return `
+            <div class="no-photo">
+                No Photo
+            </div>
+        `;
+
+    }
+
+    return `
+        <img
+            src="${escapeHTML(safePhoto)}"
+            class="listing-photo"
+            alt="Surplus item photo"
+            onerror="this.outerHTML='<div class=&quot;no-photo&quot;>No Photo</div>'"
+        >
+    `;
+
+}
+
+
+// ===================================
+// LOAD DATA FROM SQL SERVER
+// ===================================
+
+async function loadListings() {
+
+    const message = document.getElementById('message');
+
+    message.textContent = 'Loading surplus listings...';
+
+    try {
+
+        const response = await fetch('/api/food-listing');
+
+        if (!response.ok) {
+
+            throw new Error('Unable to retrieve surplus listings.');
+
+        }
+
+        const result = await response.json();
+
+        allListings = Array.isArray(result)
+            ? result
+            : (result.data || result.recordset || []);
+
+
+        // UPDATE SUMMARY CARDS
+
+        document.getElementById('totalListings').textContent =
+            allListings.length;
+
+        document.getElementById('availableListings').textContent =
+            allListings.filter(item =>
+                item.FoodStatus === 'Available'
+            ).length;
+
+        document.getElementById('claimedListings').textContent =
+            allListings.filter(item =>
+                item.FoodStatus === 'Claimed'
+            ).length;
+
+        document.getElementById('completedListings').textContent =
+            allListings.filter(item =>
+                item.FoodStatus === 'Completed'
+            ).length;
+
+
+        message.textContent = '';
+
+        renderListings();
+
+    } catch (error) {
+
+        message.textContent = error.message;
+
+        document.getElementById('listingRecords').innerHTML = `
+            <tr>
+                <td colspan="8" class="empty">
+                    Unable to load surplus listings.
+                    Please check your server.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+// ===================================
+// SEARCH AND FILTER
+// ===================================
+
+function renderListings() {
+
+    const keyword = document
+        .getElementById('searchItem')
+        .value
+        .toLowerCase();
+
+    const type = document
+        .getElementById('typeFilter')
+        .value;
+
+
+    const filtered = allListings.filter(item => {
+
+        const matchesName = String(item.FoodName || '')
+            .toLowerCase()
+            .includes(keyword);
+
+        const matchesType =
+            !type || item.FoodCategory === type;
+
+        return matchesName && matchesType;
+
+    });
+
+
+    // DISPLAY LISTINGS
+
+    document.getElementById('listingRecords').innerHTML =
+
+        filtered.map(item => `
+
+            <tr>
+
+                <td>
+                    ${displayPhoto(item.FoodPhoto)}
+                </td>
+
+                <td>
+                    #${escapeHTML(item.FoodID)}
+                </td>
+
+                <td>
+                    <span class="item-name">
+                        ${escapeHTML(item.FoodName)}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="item-type">
+                        ${escapeHTML(item.FoodCategory)}
+                    </span>
+                </td>
+
+                <td>
+                    ${escapeHTML(item.Quantity)}
+                </td>
+
+                <td>
+                    ${formatDate(item.ExpiryDateTime)}
+                </td>
+
+                <td>
+                    ${formatDate(item.LastPickupTime)}
+                </td>
+
+                <td>
+                    ${statusBadge(item.FoodStatus)}
+                </td>
+
+            </tr>
+
+        `).join('') ||
+
+        `
+            <tr>
+                <td colspan="8" class="empty">
+                    No surplus items found.
+                </td>
+            </tr>
+        `;
+
+}
+
+
+// ===================================
+// EVENT LISTENERS
+// ===================================
+
+document
+    .getElementById('searchItem')
+    .addEventListener('input', renderListings);
+
+
+document
+    .getElementById('typeFilter')
+    .addEventListener('change', renderListings);
+
+
+// ===================================
+// INITIAL LOAD
+// ===================================
+
+loadListings();
+
+</script>
+
+</body>
+</html>

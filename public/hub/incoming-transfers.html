@@ -1,0 +1,1222 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incoming Transfers | Waste2Worth</title>
+    <link rel="stylesheet" href="../assets/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #F7F8F3;
+            color: #18382D;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-content {
+            padding: 30px;
+            width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+            color: #075B46;
+        }
+
+        .page-header p {
+            color: #788B80;
+            margin: 0;
+        }
+
+        .demo-tag {
+            background: #FFF3D6;
+            color: #936500;
+            padding: 9px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 22px;
+            border: 1px solid #E3EAE4;
+            border-radius: 15px;
+        }
+
+        .summary-card p {
+            color: #788B80;
+            margin: 0 0 10px;
+            font-size: 13px;
+        }
+
+        .summary-card h2 {
+            margin: 0;
+            font-size: 28px;
+            color: #075B46;
+        }
+
+        .section-card {
+            background: white;
+            border: 1px solid #E3EAE4;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 23px;
+            border-bottom: 1px solid #E8EDE9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .section-header h2 {
+            margin: 0 0 7px;
+            font-size: 19px;
+        }
+
+        .section-header p {
+            color: #788B80;
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .toolbar {
+            padding: 20px 23px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar input,
+        .toolbar select {
+            padding: 12px;
+            border: 1px solid #DDE6DF;
+            border-radius: 9px;
+            font-size: 13px;
+            outline: none;
+            background: white;
+        }
+
+        .toolbar input {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .toolbar select {
+            min-width: 150px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            background: #F7F9FA;
+            color: #66788A;
+            font-size: 12px;
+            text-align: left;
+            padding: 17px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 18px 17px;
+            border-top: 1px solid #E8EDE9;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .transfer-code {
+            color: #075B46;
+            font-weight: bold;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #18382D;
+        }
+
+        .sub-text {
+            display: block;
+            color: #788B80;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .pending {
+            color: #936500;
+            background: #FFF3D6;
+        }
+
+        .inspected {
+            color: #167044;
+            background: #E5F5EB;
+        }
+
+        .btn {
+            border: none;
+            padding: 11px 15px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #079B70;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #075B46;
+        }
+
+        .btn-dark {
+            background: #101828;
+            color: white;
+        }
+
+        .btn-light {
+            background: #EAF4EE;
+            color: #075B46;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 35px;
+            color: #788B80;
+        }
+
+        .demo-notice {
+            background: #FFF8E8;
+            border: 1px solid #F1E0B9;
+            color: #80611C;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        /* MODAL */
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            width: 100%;
+            max-width: 760px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 22px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 22px;
+            top: 18px;
+            border: none;
+            background: none;
+            font-size: 27px;
+            color: #94A3B8;
+            cursor: pointer;
+        }
+
+        .modal-heading {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-icon {
+            background: #101828;
+            color: #27D6A0;
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto auto 15px;
+            font-size: 25px;
+        }
+
+        .modal-heading h2 {
+            margin: 0 0 8px;
+            font-size: 27px;
+        }
+
+        .modal-heading p {
+            color: #788B80;
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .transfer-info {
+            background: #F7F9FA;
+            border: 1px solid #E0E7EF;
+            padding: 18px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+
+        .info-row span:first-child {
+            color: #788B80;
+        }
+
+        .info-row strong {
+            text-align: right;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #D5DFE8;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #079B70;
+        }
+
+        .form-group input[readonly] {
+            background: #F3F5F7;
+        }
+
+        .quantity-passed input {
+            border: 2px solid #079B70;
+            background: #F3FCF8;
+        }
+
+        .quantity-rejected input {
+            background: #F3F5F7;
+            color: #D92D20;
+        }
+
+        .quantity-rule {
+            color: #66788A;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .status-display {
+            padding: 13px;
+            background: #EAF7EF;
+            border-radius: 10px;
+            color: #167044;
+            font-weight: bold;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .toast {
+            display: none;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2000;
+            background: #075B46;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        @media (max-width: 700px) {
+            .page-content {
+                padding: 15px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 22px 17px;
+            }
+
+            .modal-heading h2 {
+                font-size: 21px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+        <h2>Waste2Worth</h2>
+        <p class="sidebar-subtitle">Hub Management</p>
+
+        <nav>
+            <a href="hub-dashboard.html">Dashboard</a>
+            <a class="active" href="incoming-transfers.html">Incoming Transfers</a>
+            <a href="quality-check.html">Quality Check</a>
+            <a href="post-food.html">Post Surplus Food</a>
+            <a href="food-listings.html">Food Listings</a>
+            <a href="../index.html">Back to Home</a>
+        </nav>
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <div class="page-content">
+
+            <div class="page-header">
+                <div>
+                    <h1>Quality Check Management</h1>
+                    <p>Manage incoming branch transfers and Hub surplus inspection.</p>
+                </div>
+
+                <span class="demo-tag">Branch Interface - Demo Mode</span>
+            </div>
+
+
+            <!-- SUMMARY -->
+
+            <section class="summary-grid">
+
+                <div class="summary-card">
+                    <p>Incoming Transfers</p>
+                    <h2 id="totalTransfers">2</h2>
+                </div>
+
+                <div class="summary-card">
+                    <p>Pending Inspection</p>
+                    <h2 id="pendingTransfers">2</h2>
+                </div>
+
+                <div class="summary-card">
+                    <p>Inspected Transfers</p>
+                    <h2 id="inspectedTransfers">0</h2>
+                </div>
+
+            </section>
+
+
+            <!-- ADD FROM HUB -->
+
+            <section class="section-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Hub Surplus Food</h2>
+                        <p>Inspect surplus items generated directly from Hub operations.</p>
+                    </div>
+
+                    <a href="quality-check.html" class="btn btn-primary">
+                        + Add from Hub
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- INCOMING TRANSFERS -->
+
+            <section class="section-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Incoming Branch Transfers</h2>
+                        <p>
+                            Mandatory inspection before transferred items
+                            can be listed publicly.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="toolbar">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search Transfer ID or item name..."
+                    >
+
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Inspected">Inspected</option>
+                    </select>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>TRANSFER ID</th>
+                                <th>ORIGIN BRANCH</th>
+                                <th>DISPATCHED BY</th>
+                                <th>ITEM DETAILS</th>
+                                <th>QTY SENT</th>
+                                <th>SENT TIME</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="transferTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <div class="demo-notice">
+                <strong>Demo Mode:</strong>
+                Incoming Branch Transfer records are sample data based on
+                the proposed Branch_Transfer_Item ERD. Inspection results
+                on this page are temporarily stored in your browser only.
+                They are not saved to SQL Server.
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- INSPECTION MODAL -->
+
+<div class="modal-overlay" id="inspectionModal">
+
+    <div class="modal">
+
+        <button class="close-modal" onclick="closeModal()">×</button>
+
+        <div class="modal-heading">
+
+            <div class="modal-icon">✓</div>
+
+            <h2>Quality Check Inspection</h2>
+
+            <p>Mandatory QA inspection for incoming branch transfers.</p>
+
+        </div>
+
+
+        <!-- TRANSFER DETAILS -->
+
+        <div class="transfer-info">
+
+            <div class="info-row">
+                <span>Transfer ID:</span>
+                <strong id="modalTransferID">-</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Origin Branch & Staff:</span>
+                <strong id="modalOrigin">-</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Item Name:</span>
+                <strong id="modalItemName">-</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Item Type:</span>
+                <strong id="modalItemType">-</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Preparation Date:</span>
+                <strong id="modalPreparation">-</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Quantity Sent:</span>
+                <strong id="modalQuantity">-</strong>
+            </div>
+
+        </div>
+
+
+        <form id="inspectionForm">
+
+            <input type="hidden" id="currentTransferID">
+
+
+            <!-- QUANTITY -->
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>QTY RECEIVED</label>
+                    <input
+                        type="number"
+                        id="quantityReceived"
+                        min="0"
+                        readonly
+                    >
+                </div>
+
+                <div class="form-group quantity-passed">
+                    <label style="color:#079B70;">QTY PASSED</label>
+                    <input
+                        type="number"
+                        id="quantityPassed"
+                        min="0"
+                        value="0"
+                        required
+                    >
+                </div>
+
+                <div class="form-group quantity-rejected">
+                    <label style="color:#D92D20;">QTY REJECTED</label>
+                    <input
+                        type="number"
+                        id="quantityRejected"
+                        value="0"
+                        readonly
+                    >
+                </div>
+
+            </div>
+
+
+            <p class="quantity-rule">
+                Rule:
+                QuantityPassed + QuantityRejected = QuantityReceived
+            </p>
+
+
+            <!-- QUALITY STATUS -->
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>QUALITY STATUS</label>
+                    <div class="status-display" id="qualityStatus">
+                        Rejected
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>INSPECTED BY (STAFF ID)</label>
+                    <input
+                        type="text"
+                        id="inspectedBy"
+                        value="2"
+                        readonly
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>CHECK DATE & TIME</label>
+                    <input
+                        type="text"
+                        id="checkDateTime"
+                        readonly
+                    >
+                </div>
+
+            </div>
+
+
+            <!-- NOTES -->
+
+            <div class="form-group">
+
+                <label>INSPECTION NOTES</label>
+
+                <textarea
+                    id="inspectionNotes"
+                    rows="4"
+                    placeholder="Enter inspection findings..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="demo-notice">
+                This inspection is a demonstration only.
+                It does not update the Branch database or create a real listing.
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Submit Inspection
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+    // ======================================
+    // SAMPLE DATA BASED ON BRANCH ERD
+    // ======================================
+
+    const transfers = [
+
+        {
+            Transfer_ID: 201,
+            TransferCode: 'TRF-201',
+            ItemType: 'Food',
+            ItemName: 'Nasi Lemak Ayam Berempah',
+            QuantitySent: 20,
+            Unit: 'packs',
+            SentDateTime: '2026-11-15 12:15',
+            TransferStatus: 'Pending',
+            PreparationDateTime: '2026-11-15 10:00',
+            BranchID: '02',
+            BranchName: 'Ayer Keroh Branch',
+            StaffID: 'w2w0204'
+        },
+
+        {
+            Transfer_ID: 202,
+            TransferCode: 'TRF-202',
+            ItemType: 'Coffee',
+            ItemName: 'Spent Arabica Coffee Grounds',
+            QuantitySent: 18,
+            Unit: 'kg',
+            SentDateTime: '2026-11-15 12:40',
+            TransferStatus: 'Pending',
+            PreparationDateTime: '2026-11-15 09:30',
+            BranchID: '02',
+            BranchName: 'Ayer Keroh Branch',
+            StaffID: 'w2w0204'
+        }
+
+    ];
+
+
+    let selectedTransfer = null;
+
+
+    // ======================================
+    // RENDER TRANSFER TABLE
+    // ======================================
+
+    function renderTransfers() {
+
+        const table = document.getElementById('transferTable');
+
+        const search = document.getElementById('searchInput')
+            .value.toLowerCase();
+
+        const status = document.getElementById('statusFilter').value;
+
+        const filtered = transfers.filter(item => {
+
+            const matchesSearch =
+                item.TransferCode.toLowerCase().includes(search) ||
+                item.ItemName.toLowerCase().includes(search);
+
+            const matchesStatus =
+                status === '' || item.TransferStatus === status;
+
+            return matchesSearch && matchesStatus;
+
+        });
+
+
+        table.innerHTML = '';
+
+        if (filtered.length === 0) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="8" class="empty-state">
+                        No incoming transfers found.
+                    </td>
+                </tr>
+            `;
+
+        }
+
+
+        filtered.forEach(item => {
+
+            const row = document.createElement('tr');
+
+            const isPending = item.TransferStatus === 'Pending';
+
+            row.innerHTML = `
+
+                <td>
+                    <span class="transfer-code">
+                        ${item.TransferCode}
+                    </span>
+                </td>
+
+                <td>
+                    ${item.BranchName}
+                    <span class="sub-text">
+                        Branch (${item.BranchID})
+                    </span>
+                </td>
+
+                <td>
+                    <span class="transfer-code">
+                        ${item.StaffID}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="item-name">
+                        ${item.ItemName}
+                    </span>
+                    <span class="sub-text">
+                        ${item.ItemType}
+                    </span>
+                </td>
+
+                <td>
+                    <strong>
+                        ${item.QuantitySent} ${item.Unit}
+                    </strong>
+                </td>
+
+                <td>${item.SentDateTime}</td>
+
+                <td>
+                    <span class="status ${isPending ? 'pending' : 'inspected'}">
+                        ${item.TransferStatus}
+                    </span>
+                </td>
+
+                <td>
+                    <button
+                        class="btn ${isPending ? 'btn-dark' : 'btn-light'}"
+                        onclick="inspectTransfer(${item.Transfer_ID})"
+                        ${isPending ? '' : 'disabled'}
+                    >
+                        ${isPending ? '✓ Inspect' : 'Inspected'}
+                    </button>
+                </td>
+
+            `;
+
+            table.appendChild(row);
+
+        });
+
+
+        updateSummary();
+
+    }
+
+
+    // ======================================
+    // UPDATE SUMMARY
+    // ======================================
+
+    function updateSummary() {
+
+        const total = transfers.length;
+
+        const pending = transfers.filter(
+            item => item.TransferStatus === 'Pending'
+        ).length;
+
+        const inspected = transfers.filter(
+            item => item.TransferStatus === 'Inspected'
+        ).length;
+
+        document.getElementById('totalTransfers').textContent = total;
+
+        document.getElementById('pendingTransfers').textContent = pending;
+
+        document.getElementById('inspectedTransfers').textContent = inspected;
+
+    }
+
+
+    // ======================================
+    // OPEN INSPECTION MODAL
+    // ======================================
+
+    function inspectTransfer(id) {
+
+        selectedTransfer = transfers.find(
+            item => item.Transfer_ID === id
+        );
+
+        if (!selectedTransfer) return;
+
+        if (selectedTransfer.TransferStatus !== 'Pending') {
+            return;
+        }
+
+        document.getElementById('currentTransferID').value =
+            selectedTransfer.Transfer_ID;
+
+        document.getElementById('modalTransferID').textContent =
+            selectedTransfer.TransferCode;
+
+        document.getElementById('modalOrigin').textContent =
+            `${selectedTransfer.BranchName} (${selectedTransfer.BranchID}) • ${selectedTransfer.StaffID}`;
+
+        document.getElementById('modalItemName').textContent =
+            selectedTransfer.ItemName;
+
+        document.getElementById('modalItemType').textContent =
+            selectedTransfer.ItemType;
+
+        document.getElementById('modalPreparation').textContent =
+            selectedTransfer.PreparationDateTime;
+
+        document.getElementById('modalQuantity').textContent =
+            `${selectedTransfer.QuantitySent} ${selectedTransfer.Unit}`;
+
+
+        document.getElementById('quantityReceived').value =
+            selectedTransfer.QuantitySent;
+
+        document.getElementById('quantityPassed').value =
+            selectedTransfer.QuantitySent;
+
+        document.getElementById('quantityRejected').value = 0;
+
+        document.getElementById('inspectedBy').value =
+            sessionStorage.getItem('w2wUser')
+                ? JSON.parse(sessionStorage.getItem('w2wUser')).staffID
+                : '2';
+
+        document.getElementById('checkDateTime').value =
+            new Date().toLocaleString();
+
+        document.getElementById('inspectionNotes').value = '';
+
+        calculateQuality();
+
+        document.getElementById('inspectionModal')
+            .classList.add('show');
+
+    }
+
+
+    // ======================================
+    // AUTO CALCULATE QUALITY STATUS
+    // ======================================
+
+    function calculateQuality() {
+
+        const received = Number(
+            document.getElementById('quantityReceived').value
+        );
+
+        const passedInput = document.getElementById('quantityPassed');
+
+        let passed = Number(passedInput.value);
+
+        if (passed < 0) passed = 0;
+
+        if (passed > received) passed = received;
+
+        passedInput.value = passed;
+
+        const rejected = received - passed;
+
+        document.getElementById('quantityRejected').value = rejected;
+
+        let status = 'Rejected';
+
+        if (passed === received && received > 0) {
+
+            status = 'Passed';
+
+        }
+
+        else if (passed > 0 && passed < received) {
+
+            status = 'Partially Passed';
+
+        }
+
+        document.getElementById('qualityStatus').textContent = status;
+
+        document.getElementById('qualityStatus').style.background =
+            status === 'Rejected' ? '#FFF0F0' : '#EAF7EF';
+
+        document.getElementById('qualityStatus').style.color =
+            status === 'Rejected' ? '#B42318' : '#167044';
+
+    }
+
+
+    // ======================================
+    // SUBMIT INSPECTION - DEMO ONLY
+    // ======================================
+
+    document.getElementById('inspectionForm')
+        .addEventListener('submit', function(event) {
+
+            event.preventDefault();
+
+            if (!selectedTransfer) return;
+
+            const received = Number(
+                document.getElementById('quantityReceived').value
+            );
+
+            const passed = Number(
+                document.getElementById('quantityPassed').value
+            );
+
+            const rejected = Number(
+                document.getElementById('quantityRejected').value
+            );
+
+            const notes = document.getElementById('inspectionNotes')
+                .value.trim();
+
+
+            if (passed < 0 || rejected < 0 || passed + rejected !== received) {
+
+                alert('Quantity Passed + Quantity Rejected must equal Quantity Received.');
+
+                return;
+
+            }
+
+            if (!notes) {
+
+                alert('Please enter inspection notes.');
+
+                return;
+
+            }
+
+
+            const status = passed === received
+                ? 'Passed'
+                : passed === 0
+                    ? 'Rejected'
+                    : 'Partially Passed';
+
+
+            // Demo state update only
+            selectedTransfer.TransferStatus = 'Inspected';
+
+            selectedTransfer.InspectionResult = {
+                QuantityReceived: received,
+                QuantityPassed: passed,
+                QuantityRejected: rejected,
+                QualityStatus: status,
+                InspectionNotes: notes,
+                StaffID: document.getElementById('inspectedBy').value,
+                CheckDateTime: new Date().toISOString()
+            };
+
+
+            closeModal();
+
+            renderTransfers();
+
+            showToast(
+                'Demo inspection completed: ' + status
+            );
+
+        });
+
+
+    // ======================================
+    // CLOSE MODAL
+    // ======================================
+
+    function closeModal() {
+
+        document.getElementById('inspectionModal')
+            .classList.remove('show');
+
+        selectedTransfer = null;
+
+    }
+
+
+    // ======================================
+    // TOAST MESSAGE
+    // ======================================
+
+    function showToast(message) {
+
+        const toast = document.getElementById('toast');
+
+        toast.textContent = message;
+
+        toast.style.display = 'block';
+
+        setTimeout(() => {
+
+            toast.style.display = 'none';
+
+        }, 3000);
+
+    }
+
+
+    // ======================================
+    // SEARCH AND FILTER
+    // ======================================
+
+    document.getElementById('searchInput')
+        .addEventListener('input', renderTransfers);
+
+    document.getElementById('statusFilter')
+        .addEventListener('change', renderTransfers);
+
+
+    // ======================================
+    // INITIAL LOAD
+    // ======================================
+
+    renderTransfers();
+
+</script>
+
+</body>
+</html>

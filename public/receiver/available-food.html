@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Food | Waste2Worth</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <h2>Waste2Worth</h2>
+            <p class="sidebar-subtitle">Receiver Portal</p>
+
+            <nav>
+                <a href="receiver-dashboard.html">Dashboard</a>
+                <a class="active" href="available-food.html">Available Food</a>
+                <a href="my-claims.html">My Claims</a>
+                <a href="../index.html">Back to Home</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div>
+                    <h1>Available Food</h1>
+                    <p>Browse surplus food available for collection.</p>
+                </div>
+                <span class="badge">Demo Mode</span>
+            </div>
+
+            <section class="card">
+                <label for="searchFood">Search Food</label>
+                <input
+                    type="text"
+                    id="searchFood"
+                    placeholder="Search by food name..."
+                >
+
+                <label for="categoryFilter">Food Category</label>
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Food">Food</option>
+                    <option value="Coffee">Coffee</option>
+                </select>
+            </section>
+
+            <section class="card">
+                <h2>Food Listings</h2>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Food Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Expiry Date</th>
+                                <th>Last Pickup</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="foodTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <p class="demo-notice">
+                Demo Mode: Food information is sample data. Claiming an
+                item here does not reserve real food.
+            </p>
+        </main>
+    </div>
+
+    <script>
+        const sampleFoods = [
+            {
+                id: 1,
+                name: 'Chicken Rice',
+                category: 'Food',
+                quantity: '10 packs',
+                expiry: '2026-11-23 18:00',
+                pickup: '2026-11-23 17:00'
+            },
+            {
+                id: 2,
+                name: 'Fresh Bread',
+                category: 'Food',
+                quantity: '15 packs',
+                expiry: '2026-11-23 20:00',
+                pickup: '2026-11-23 19:00'
+            },
+            {
+                id: 3,
+                name: 'Coffee Grounds',
+                category: 'Coffee',
+                quantity: '5 kg',
+                expiry: '2026-11-24 12:00',
+                pickup: '2026-11-24 11:00'
+            }
+        ];
+
+        const searchInput = document.getElementById('searchFood');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const foodTable = document.getElementById('foodTable');
+
+        function renderFoods() {
+            const search = searchInput.value.toLowerCase();
+            const category = categoryFilter.value;
+
+            const foods = sampleFoods.filter(food => {
+                return food.name.toLowerCase().includes(search) &&
+                    (category === '' || food.category === category);
+            });
+
+            foodTable.innerHTML = '';
+
+            if (foods.length === 0) {
+                foodTable.innerHTML = `
+                    <tr>
+                        <td colspan="6">No food items found.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            foods.forEach(food => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${food.name}</td>
+                    <td>${food.category}</td>
+                    <td>${food.quantity}</td>
+                    <td>${food.expiry}</td>
+                    <td>${food.pickup}</td>
+                    <td>
+                        <button class="btn btn-primary"
+                            onclick="claimFood(${food.id})">
+                            Claim Food
+                        </button>
+                    </td>
+                `;
+
+                foodTable.appendChild(row);
+            });
+        }
+
+        function claimFood(foodID) {
+            const food = sampleFoods.find(item => item.id === foodID);
+
+            if (!food) return;
+
+            const claims = JSON.parse(
+                localStorage.getItem('w2wDemoClaims') || '[]'
+            );
+
+            if (claims.some(item => item.id === foodID)) {
+                alert('You have already claimed this food item.');
+                return;
+            }
+
+            claims.push({
+                ...food,
+                claimDate: new Date().toLocaleString(),
+                status: 'Pending'
+            });
+
+            localStorage.setItem(
+                'w2wDemoClaims',
+                JSON.stringify(claims)
+            );
+
+            alert('Demo claim submitted successfully!');
+        }
+
+        searchInput.addEventListener('input', renderFoods);
+        categoryFilter.addEventListener('change', renderFoods);
+
+        renderFoods();
+    </script>
+</body>
+</html>

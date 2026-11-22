@@ -1,0 +1,569 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Waste2Worth</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #F7F8F3;
+            color: #18382D;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            height: 80px;
+            padding: 0 7%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #18382D;
+        }
+
+        .logo-icon {
+            width: 43px;
+            height: 43px;
+            background: #079B70;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+        }
+
+        .logo h2 {
+            font-size: 23px;
+            font-weight: 800;
+        }
+
+        .back-btn {
+            color: #075B46;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 45px 20px;
+        }
+
+        .login-container {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            border-radius: 22px;
+            border: 1px solid #E5ECE6;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.05);
+        }
+
+        .heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .heading .icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .heading h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #075B46;
+            margin-bottom: 10px;
+        }
+
+        .heading p {
+            color: #788B80;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #DDE6DF;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #079B70;
+            box-shadow: 0 0 0 3px rgba(7,155,112,0.08);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #079B70;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .submit-btn:hover {
+            background: #075B46;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .demo-receiver {
+            background: #075B46;
+        }
+
+        .demo-admin {
+            background: #18382D;
+        }
+
+        .demo-branch {
+            background: #55745F;
+        }
+
+        .demo-receiver:hover,
+        .demo-admin:hover,
+        .demo-branch:hover {
+            background: #079B70;
+        }
+
+        .demo-section {
+            margin-top: 22px;
+            text-align: center;
+            border-top: 1px solid #E5ECE6;
+            padding-top: 18px;
+        }
+
+        .demo-section p {
+            font-size: 12px;
+            color: #788B80;
+            margin-bottom: 10px;
+        }
+
+        .demo-section button {
+            margin-top: 8px;
+        }
+
+        .status-message {
+            display: none;
+            padding: 12px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .status-message.error {
+            display: block;
+            background: #FFF0F0;
+            color: #B42318;
+        }
+
+        .status-message.success {
+            display: block;
+            background: #EAF7EF;
+            color: #167044;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 23px;
+            color: #788B80;
+            font-size: 12px;
+        }
+
+        .register-link a {
+            color: #079B70;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #788B80;
+            font-size: 11px;
+        }
+
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 28px 22px;
+            }
+
+            .heading h1 {
+                font-size: 27px;
+            }
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .logo h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">🌱</div>
+            <h2>Waste2Worth</h2>
+        </a>
+
+        <a href="/" class="back-btn">← Back to Home</a>
+    </header>
+
+    <main class="main">
+
+        <div class="login-container">
+
+            <div class="heading">
+                <div class="icon">🌱</div>
+
+                <h1>Welcome Back</h1>
+
+                <p>
+                    Log in to your Waste2Worth account
+                    and continue making a difference.
+                </p>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+
+            <!-- NORMAL LOGIN -->
+
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Enter your username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="submit-btn" id="loginButton">
+                    Log In
+                </button>
+
+            </form>
+
+            <!-- DEMO LOGIN OPTIONS -->
+
+            <div class="demo-section">
+
+                <p>For demonstration purposes</p>
+
+                <button
+                    type="button"
+                    id="demoReceiverBtn"
+                    class="submit-btn demo-receiver">
+                    Continue as Demo Receiver
+                </button>
+
+                <button
+                    type="button"
+                    id="demoAdminBtn"
+                    class="submit-btn demo-admin">
+                    Continue as Demo Admin
+                </button>
+
+                <button
+                    type="button"
+                    id="demoBranchBtn"
+                    class="submit-btn demo-branch">
+                    Continue as Demo Branch Staff
+                </button>
+
+            </div>
+
+            <!-- REGISTER LINK -->
+
+            <div class="register-link">
+                Don't have a Receiver account?
+                <a href="/register.html">Register here</a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        © 2026 Waste2Worth. Turning Waste Into Worth, Together.
+    </footer>
+
+    <script>
+
+        // DISPLAY MESSAGE
+
+        function showMessage(message, type) {
+
+            const status = document.getElementById('statusMessage');
+
+            status.textContent = message;
+            status.className = 'status-message ' + type;
+
+        }
+
+
+        // NORMAL LOGIN
+
+        document.getElementById('loginForm')
+            .addEventListener('submit', async function(event) {
+
+                event.preventDefault();
+
+                const username =
+                    document.getElementById('username').value.trim();
+
+                const password =
+                    document.getElementById('password').value;
+
+                const loginButton =
+                    document.getElementById('loginButton');
+
+                if (!username || !password) {
+
+                    showMessage(
+                        'Please enter username and password.',
+                        'error'
+                    );
+
+                    return;
+                }
+
+                try {
+
+                    loginButton.disabled = true;
+                    loginButton.textContent = 'Logging in...';
+
+                    const response = await fetch('/api/auth/login', {
+
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(
+                            result.message || 'Login failed.'
+                        );
+                    }
+
+                    sessionStorage.setItem(
+                        'w2wUser',
+                        JSON.stringify(result.user)
+                    );
+
+                    showMessage(
+                        'Login successful! Redirecting...',
+                        'success'
+                    );
+
+                    const role = String(result.user.role || '')
+                        .trim()
+                        .toLowerCase();
+
+                    setTimeout(() => {
+
+                        if (role === 'admin') {
+
+                            window.location.href =
+                                '/admin/admin-dashboard.html';
+
+                        } else if (
+                            role === 'hubstaff' ||
+                            role === 'hub staff'
+                        ) {
+
+                            window.location.href =
+                                '/hub/hub-dashboard.html';
+
+                        } else if (
+                            role === 'branchstaff' ||
+                            role === 'branch staff'
+                        ) {
+
+                            window.location.href =
+                                '/branch/branch-dashboard.html';
+
+                        } else {
+
+                            showMessage(
+                                'Your account role is not recognised: ' + role,
+                                'error'
+                            );
+
+                            loginButton.disabled = false;
+                            loginButton.textContent = 'Log In';
+
+                        }
+
+                    }, 1000);
+
+                } catch (error) {
+
+                    showMessage(error.message, 'error');
+
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'Log In';
+
+                }
+
+            });
+
+
+        // DUMMY RECEIVER LOGIN
+
+        document.getElementById('demoReceiverBtn')
+            .addEventListener('click', function() {
+
+                const demoReceiver = {
+                    receiverID: 1,
+                    fullName: 'Demo Receiver',
+                    username: 'demo.receiver',
+                    role: 'receiver',
+                    accountType: 'Demo'
+                };
+
+                sessionStorage.setItem(
+                    'w2wUser',
+                    JSON.stringify(demoReceiver)
+                );
+
+                window.location.href =
+                    '/receiver/receiver-dashboard.html';
+
+            });
+
+
+        // DUMMY ADMIN LOGIN
+
+        document.getElementById('demoAdminBtn')
+            .addEventListener('click', function() {
+
+                const demoAdmin = {
+                    staffID: 999,
+                    fullName: 'Demo Administrator',
+                    username: 'demo.admin',
+                    role: 'admin',
+                    accountType: 'Demo'
+                };
+
+                sessionStorage.setItem(
+                    'w2wUser',
+                    JSON.stringify(demoAdmin)
+                );
+
+                window.location.href =
+                    '/admin/admin-dashboard.html';
+
+            });
+
+
+        // DUMMY BRANCH STAFF LOGIN
+
+        document.getElementById('demoBranchBtn')
+            .addEventListener('click', function() {
+
+                const demoBranch = {
+                    staffID: 998,
+                    fullName: 'Demo Branch Staff',
+                    username: 'demo.branch',
+                    role: 'branchstaff',
+                    branchID: 'BR001',
+                    accountType: 'Demo'
+                };
+
+                sessionStorage.setItem(
+                    'w2wUser',
+                    JSON.stringify(demoBranch)
+                );
+
+                window.location.href =
+                    '/branch/branch-dashboard.html';
+
+            });
+
+    </script>
+
+</body>
+</html>
