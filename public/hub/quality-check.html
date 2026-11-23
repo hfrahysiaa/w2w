@@ -295,16 +295,17 @@
 </main>
 </div>
 
-<script>
 
+//lastest
+
+
+<script>
 const form = document.getElementById('qualityForm');
 const message = document.getElementById('message');
 
 let selectedSource = '';
 
-
 // Get logged-in staff information
-
 let currentUser = {};
 
 try {
@@ -316,12 +317,10 @@ try {
 }
 
 const staffID = Number(currentUser.staffID || 0);
-
 document.getElementById('staffID').value = staffID;
 
 
 // Select item source
-
 function selectSource(source) {
 
     selectedSource = source;
@@ -343,7 +342,6 @@ function selectSource(source) {
     form.reset();
 
     document.getElementById('staffID').value = staffID;
-
     document.getElementById('transferSelect').value = '';
 
     document.getElementById('itemName').readOnly = false;
@@ -355,45 +353,28 @@ function selectSource(source) {
     message.textContent = '';
 
     if (source === 'hub') {
-
         document.getElementById('inspectionPanel').style.display = 'block';
-
-        document.getElementById('transferID').value = '';
-
     }
-
 }
 
 
 // Select incoming transfer from dropdown
-
 function selectTransfer() {
 
     const select = document.getElementById('transferSelect');
-
     const option = select.options[select.selectedIndex];
 
     if (!option.value) {
-
         document.getElementById('inspectionPanel').style.display = 'none';
-
         return;
     }
 
-    document.getElementById('itemName').value =
-        option.dataset.name;
-
-    document.getElementById('category').value =
-        option.dataset.category;
-
-    document.getElementById('received').value =
-        option.dataset.quantity;
-
-    document.getElementById('transferID').value =
-        option.value;
+    document.getElementById('itemName').value = option.dataset.name;
+    document.getElementById('category').value = option.dataset.category;
+    document.getElementById('received').value = option.dataset.quantity;
+    document.getElementById('transferID').value = option.value;
 
     // Auto-filled transfer information
-
     document.getElementById('itemName').readOnly = true;
     document.getElementById('category').disabled = true;
     document.getElementById('received').readOnly = true;
@@ -404,12 +385,10 @@ function selectTransfer() {
     document.getElementById('rejected').value = '';
 
     message.textContent = '';
-
 }
 
 
 // Display quality status
-
 function statusBadge(status) {
 
     let css = 'status-yellow';
@@ -425,7 +404,6 @@ function statusBadge(status) {
 
 
 // Protect displayed text
-
 function escapeHTML(value) {
 
     return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -435,15 +413,18 @@ function escapeHTML(value) {
         '"': '&quot;',
         "'": '&#39;'
     })[char]);
-
 }
 
 
 // Load quality check records from database
-
 async function loadRecords() {
 
+    const recordsTable = document.getElementById('records');
+
     try {
+
+        recordsTable.innerHTML =
+            '<tr><td colspan="7">Loading records...</td></tr>';
 
         const response = await fetch('/api/quality-check');
 
@@ -457,10 +438,10 @@ async function loadRecords() {
             ? result
             : (result.data || result.recordset || []);
 
-        document.getElementById('records').innerHTML =
+        recordsTable.innerHTML =
             records.map(item => `
                 <tr>
-                    <td>#QC${item.QualityID}</td>
+                    <td>#QC${escapeHTML(item.QualityID)}</td>
                     <td>${escapeHTML(item.ItemName)}</td>
                     <td>${escapeHTML(item.Category)}</td>
                     <td>${escapeHTML(item.QuantityReceived)}</td>
@@ -473,18 +454,15 @@ async function loadRecords() {
 
     } catch (error) {
 
-        document.getElementById('records').innerHTML =
+        recordsTable.innerHTML =
             '<tr><td colspan="7" class="empty">Unable to load records.</td></tr>';
 
-        message.textContent = error.message;
-
+        console.error('Load Records Error:', error);
     }
-
 }
 
 
 // Submit quality check
-
 form.addEventListener('submit', async function(event) {
 
     event.preventDefault();
@@ -495,7 +473,8 @@ form.addEventListener('submit', async function(event) {
     }
 
     if (!staffID) {
-        message.textContent = 'Unable to identify logged-in Staff ID. Please log in again.';
+        message.textContent =
+            'Unable to identify logged-in Staff ID. Please log in again.';
         return;
     }
 
@@ -522,45 +501,46 @@ form.addEventListener('submit', async function(event) {
     const transferValue =
         document.getElementById('transferID').value;
 
-    const payload = {
-
-        ItemName: document.getElementById('itemName').value.trim(),
-
-        Category: document.getElementById('category').value,
-
-        QuantityReceived: received,
-
-        QuantityPassed: passed,
-
-        QuantityRejected: rejected,
-
-        StaffID: staffID,
-
-        TransferID: selectedSource === 'transfer'
-            ? Number(transferValue)
-            : null
-
-    };
-
     if (selectedSource === 'transfer' && !transferValue) {
         message.textContent = 'Please select an incoming transfer.';
         return;
     }
 
+    // Automatically determine Quality Status
+    let qualityStatus;
+
+    if (passed === received && rejected === 0) {
+        qualityStatus = 'Passed';
+    } else if (passed === 0 && rejected === received) {
+        qualityStatus = 'Rejected';
+    } else {
+        qualityStatus = 'Partially Passed';
+    }
+
+    const payload = {
+        ItemName: document.getElementById('itemName').value.trim(),
+        Category: document.getElementById('category').value,
+        QuantityReceived: received,
+        QuantityPassed: passed,
+        QuantityRejected: rejected,
+        QualityStatus: qualityStatus,
+        InspectionNotes: null,
+        StaffID: staffID,
+        TransferID: selectedSource === 'transfer'
+            ? Number(transferValue)
+            : null
+    };
+
     try {
 
-        message.textContent = 'Saving quality check...';
+        message.textContent = 'Saving Quality Check...';
 
         const response = await fetch('/api/quality-check', {
-
             method: 'POST',
-
             headers: {
                 'Content-Type': 'application/json'
             },
-
             body: JSON.stringify(payload)
-
         });
 
         const result = await response.json();
@@ -589,14 +569,13 @@ form.addEventListener('submit', async function(event) {
     } catch (error) {
 
         message.textContent = error.message;
-
+        console.error('Quality Check Error:', error);
     }
 
 });
 
 
 // Clear form
-
 form.addEventListener('reset', function() {
 
     setTimeout(() => {
@@ -613,10 +592,10 @@ form.addEventListener('reset', function() {
 
 
 // Load records when page opens
-
 loadRecords();
 
 </script>
+
 
 </body>
 </html>

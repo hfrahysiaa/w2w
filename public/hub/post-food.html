@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,6 +55,24 @@
         .required-note {
             color: #B42318;
         }
+
+        /* REMOVE PHOTO BUTTON */
+        .remove-photo-btn {
+            display: none;
+            margin: 12px auto 0;
+            padding: 8px 14px;
+            border: 1px solid #F0B8B4;
+            border-radius: 8px;
+            background: #FFF1F0;
+            color: #B42318;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .remove-photo-btn:hover {
+            background: #FFE2DF;
+        }
     </style>
 </head>
 
@@ -64,7 +81,6 @@
 <div class="layout">
 
     <!-- SIDEBAR -->
-
     <aside class="sidebar">
 
         <div class="logo">
@@ -103,18 +119,15 @@
 
 
     <!-- MAIN CONTENT -->
-
     <main class="main">
 
         <div class="topbar">
-
             <div>
                 <b>Waste2Worth Management</b><br>
                 <small>Hub Staff Workspace</small>
             </div>
 
             <span class="tag">LIVE DATABASE</span>
-
         </div>
 
 
@@ -140,7 +153,6 @@
                 <div class="grid">
 
                     <!-- QUALITY CHECK -->
-
                     <div class="field">
 
                         <label>Quality Check Record *</label>
@@ -157,7 +169,6 @@
 
 
                     <!-- FOOD NAME -->
-
                     <div class="field">
 
                         <label>Food Name *</label>
@@ -174,7 +185,6 @@
 
 
                     <!-- CATEGORY -->
-
                     <div class="field">
 
                         <label>Food Category *</label>
@@ -191,7 +201,6 @@
 
 
                     <!-- QUANTITY -->
-
                     <div class="field">
 
                         <label>Quantity Passed *</label>
@@ -208,7 +217,6 @@
 
 
                     <!-- PREPARATION DATE -->
-
                     <div class="field">
 
                         <label>Preparation Date & Time</label>
@@ -222,7 +230,6 @@
 
 
                     <!-- EXPIRY DATE -->
-
                     <div class="field">
 
                         <label>Expiry Date & Time</label>
@@ -236,7 +243,6 @@
 
 
                     <!-- LAST PICKUP -->
-
                     <div class="field">
 
                         <label>Last Pickup Time</label>
@@ -250,7 +256,6 @@
 
 
                     <!-- FOOD SAFETY TAG -->
-
                     <div class="field">
 
                         <label>Food Safety Tag</label>
@@ -277,7 +282,6 @@
 
 
                     <!-- ALLERGEN -->
-
                     <div class="field">
 
                         <label>Allergen Information</label>
@@ -292,7 +296,6 @@
 
 
                     <!-- STAFF ID -->
-
                     <div class="field">
 
                         <label>Staff ID *</label>
@@ -313,7 +316,6 @@
 
 
                     <!-- FOOD PHOTO UPLOAD -->
-
                     <div class="field">
 
                         <label>
@@ -347,6 +349,15 @@
 
                             <p id="photoName" class="small-note"></p>
 
+                            <!-- REMOVE PHOTO BUTTON -->
+                            <button
+                                type="button"
+                                id="removePhotoBtn"
+                                class="remove-photo-btn"
+                            >
+                                🗑 Remove Photo
+                            </button>
+
                         </div>
 
                     </div>
@@ -355,7 +366,6 @@
 
 
                 <!-- ACTION BUTTONS -->
-
                 <div class="actions">
 
                     <button
@@ -409,7 +419,6 @@
 
 
     // Check login session
-
     if (!currentUser || !currentUser.staffID) {
 
         alert('Please log in before accessing this page.');
@@ -420,7 +429,6 @@
 
 
     // Only Hub Staff can access this page
-
     const currentRole = String(currentUser?.role || '')
         .trim()
         .toLowerCase();
@@ -439,7 +447,6 @@
 
 
     // Display current staff information
-
     document.getElementById('staffID').value =
         currentUser.staffID;
 
@@ -465,6 +472,8 @@
     const photoPreview = document.getElementById('photoPreview');
 
     const photoName = document.getElementById('photoName');
+
+    const removePhotoBtn = document.getElementById('removePhotoBtn');
 
     const publishButton = document.getElementById('publishButton');
 
@@ -636,12 +645,20 @@
 
 
     // ======================================
-    // FOOD PHOTO PREVIEW
+    // FOOD PHOTO PREVIEW AND REMOVE PHOTO
     // ======================================
 
-    photoInput.addEventListener('change', function() {
+    function clearPhoto() {
 
-        const file = this.files[0];
+        photoInput.value = '';
+
+        photoPreview.removeAttribute('src');
+
+        photoPreview.style.display = 'none';
+
+        photoName.textContent = '';
+
+        removePhotoBtn.style.display = 'none';
 
         if (previewURL) {
 
@@ -651,20 +668,51 @@
 
         }
 
+    }
+
+
+    // Remove selected photo
+    function removePhoto() {
+
+        clearPhoto();
+
+    }
+
+
+    removePhotoBtn.addEventListener('click', removePhoto);
+
+
+    // Preview selected photo
+    photoInput.addEventListener('change', function() {
+
+        const file = this.files[0];
+
+        // Clear previous preview
+        if (previewURL) {
+
+            URL.revokeObjectURL(previewURL);
+
+            previewURL = null;
+
+        }
+
+        photoPreview.removeAttribute('src');
+
         photoPreview.style.display = 'none';
 
         photoName.textContent = '';
+
+        removePhotoBtn.style.display = 'none';
 
 
         if (!file) return;
 
 
+        // Allowed image types
         const allowedTypes = [
-
             'image/jpeg',
             'image/png',
             'image/webp'
-
         ];
 
 
@@ -672,24 +720,26 @@
 
             alert('Please upload JPG, JPEG, PNG or WEBP only.');
 
-            this.value = '';
+            photoInput.value = '';
 
             return;
 
         }
 
 
+        // Maximum file size: 5MB
         if (file.size > 5 * 1024 * 1024) {
 
             alert('Image size must not exceed 5MB.');
 
-            this.value = '';
+            photoInput.value = '';
 
             return;
 
         }
 
 
+        // Display image preview
         previewURL = URL.createObjectURL(file);
 
         photoPreview.src = previewURL;
@@ -697,6 +747,8 @@
         photoPreview.style.display = 'block';
 
         photoName.textContent = file.name;
+
+        removePhotoBtn.style.display = 'inline-block';
 
     });
 
@@ -712,17 +764,8 @@
             document.getElementById('staffID').value =
                 currentUser.staffID;
 
-            photoPreview.style.display = 'none';
-
-            photoName.textContent = '';
-
-            if (previewURL) {
-
-                URL.revokeObjectURL(previewURL);
-
-                previewURL = null;
-
-            }
+            // Remove photo preview and selected file
+            clearPhoto();
 
             message.textContent = '';
 
@@ -795,8 +838,7 @@
             document.getElementById('lastPickupTime').value;
 
 
-        // Check dates
-
+        // Check expiry date
         if (
             expiry &&
             preparation &&
@@ -813,6 +855,7 @@
         }
 
 
+        // Check last pickup time
         if (
             pickup &&
             expiry &&
@@ -861,7 +904,6 @@
 
 
         // Actual image file
-
         formData.append(
             'FoodPhoto',
             photoFile
@@ -893,7 +935,6 @@
 
 
         // Staff ID comes from the login session
-
         formData.append(
             'StaffID',
             currentUser.staffID

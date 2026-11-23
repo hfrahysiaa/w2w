@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-const { sql, poolPromise } = require('./db');
+const { poolPromise } = require('./db');
 const authRoutes = require('./auth');
 const qualityCheckRoutes = require('./Quality_Check');
 const foodListingRoutes = require('./Food_Listing');
@@ -15,8 +15,8 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Frontend
-app.use(express.static('public'));
+// Frontend and uploaded images
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Authentication Routes
 app.use('/api/auth', authRoutes);
