@@ -1,3 +1,479 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tracking Report | Waste2Worth</title><link rel="stylesheet" href="/assets/style.css"><link rel="stylesheet" href="/admin/module5.css"></head><body><div class="layout"><aside class="sidebar"><div class="logo">Waste2Worth<small>GIVING WASTE A PURPOSE</small></div><div class="profile"><b id="adminName">Hub Branch Admin</b><small>Admin Workspace</small></div><div class="nav-label">MAIN MENU</div><a class="nav-btn" href="/admin/admin-dashboard.html">🏠 <span>Dashboard</span></a><a class="nav-btn" href="/admin/analytics-report.html">📊 <span>Analytics Report</span></a><a class="nav-btn active" href="/admin/tracking-report.html">📍 <span>Tracking Report</span></a><a class="nav-btn" href="/admin/environmental-impact.html">🌳 <span>Environmental Impact</span></a><div class="nav-label">ACCOUNT</div><a class="nav-btn logout" href="#" id="logoutBtn">↪ <span>Logout</span></a></aside><main class="main"><div class="topbar"><div><b>Waste2Worth Management</b><br><small>Hub Branch Admin Workspace</small></div><span class="pill green">AUTOMATIC RECORDING</span></div><div class="page-heading"><div><h1>Waste Tracking Report</h1><p>Review pickup outcomes and waste diversion records received from the integrated modules.</p></div></div><div class="notice"><b>Automatic process:</b> Tracking records should be inserted by the backend when a pickup outcome is confirmed and the relevant data has been received and validated. This page is for monitoring; it does not provide manual record creation.</div><div class="stats"><div class="stat"><p class="stat-label">Total Tracking Records</p><h2 class="stat-value" id="recordCount">—</h2><small class="stat-note">Records in this view</small></div><div class="stat"><p class="stat-label">Successful Diversions</p><h2 class="stat-value" id="successfulCount">—</h2><small class="stat-note">Confirmed successful</small></div><div class="stat"><p class="stat-label">Estimated Carbon Savings</p><h2 class="stat-value" id="carbonTotal">—</h2><small class="stat-note">Illustrative kg CO₂e</small></div></div><section class="panel"><div class="panel-head"><div><h2>Tracking Records</h2><p class="panel-desc">Filter the records by waste type or diversion outcome.</p></div><span class="demo-tag">DEMO DATA</span></div><div class="filters"><div class="field"><label for="typeFilter">Waste type</label><select id="typeFilter"><option value="">All types</option><option>Coffee Waste</option><option>Surplus Food</option></select></div><div class="field"><label for="statusFilter">Diversion status</label><select id="statusFilter"><option value="">All statuses</option><option>Successful</option><option>Failed</option><option>Pending</option></select></div><div class="field"><label for="searchInput">Search pickup / tracking ID</label><input id="searchInput" placeholder="e.g. PU-102"></div></div><div class="table-wrap"><table><thead><tr><th>Tracking ID</th><th>Pickup ID</th><th>Waste Type</th><th>Actual Quantity</th><th>Tracking Date & Time</th><th>Diversion Status</th><th>Carbon Savings</th></tr></thead><tbody id="trackingRows"></tbody></table></div></section><p class="footer-note">Tracking records are read-only in the admin interface. No tracking data is being written to PostgreSQL in this frontend prototype.</p></main></div><script src="/admin/module5-demo.js"></script><script>
-const user=(()=>{try{return JSON.parse(sessionStorage.getItem('w2wUser'))||{}}catch(e){return {}}})();document.getElementById('adminName').textContent=user.fullName||'Hub Branch Admin';const rows=document.getElementById('trackingRows');function render(){const type=document.getElementById('typeFilter').value,status=document.getElementById('statusFilter').value,q=document.getElementById('searchInput').value.toLowerCase();const data=W2WDemo.tracking.filter(r=>(!type||r.type===type)&&(!status||r.diversion_status===status)&&(!q||String(r.pickup_id).toLowerCase().includes(q)||String(r.tracking_id).includes(q)));rows.innerHTML=data.length?data.map(r=>`<tr><td>#TRK${r.tracking_id}</td><td>${r.pickup_id}</td><td>${r.type}</td><td>${W2WDemo.money(r.actual_quantity)} kg</td><td>${r.tracking_date_time}</td><td>${W2WDemo.status(r.diversion_status)}</td><td>${W2WDemo.money(r.estimated_carbon_savings)} kg CO₂e</td></tr>`).join(''):'<tr><td colspan="7" class="empty">No tracking records match your filters.</td></tr>';document.getElementById('recordCount').textContent=data.length;document.getElementById('successfulCount').textContent=data.filter(r=>r.diversion_status==='Successful').length;document.getElementById('carbonTotal').textContent=W2WDemo.money(data.reduce((s,r)=>s+Number(r.estimated_carbon_savings),0))+' kg';}['typeFilter','statusFilter','searchInput'].forEach(id=>document.getElementById(id).addEventListener('input',render));render();document.getElementById('logoutBtn').addEventListener('click',e=>{e.preventDefault();sessionStorage.removeItem('w2wUser');location.href='/login.html'});
-</script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tracking Report | Waste2Worth</title>
+
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/admin/module5.css">
+</head>
+
+<body>
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            Waste2Worth
+            <small>GIVING WASTE A PURPOSE</small>
+        </div>
+
+        <div class="profile">
+            <b id="adminName">Hub Branch Admin</b>
+            <small>Admin Workspace</small>
+        </div>
+
+        <div class="nav-label">MAIN MENU</div>
+
+        <a class="nav-btn" href="/admin/admin-dashboard.html">
+            🏠 <span>Dashboard</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/analytics-report.html">
+            📊 <span>Analytics Report</span>
+        </a>
+
+        <a class="nav-btn active" href="/admin/tracking-report.html">
+            📍 <span>Tracking Report</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/environmental-impact.html">
+            🌳 <span>Environmental Impact</span>
+        </a>
+
+        <div class="nav-label">ACCOUNT</div>
+
+        <a class="nav-btn logout" href="#" id="logoutBtn">
+            ↪ <span>Logout</span>
+        </a>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <div class="topbar">
+            <div>
+                <b>Waste2Worth Management</b>
+                <br>
+                <small>Hub Branch Admin Workspace</small>
+            </div>
+
+            <span class="pill green">AUTOMATIC RECORDING</span>
+        </div>
+
+        <!-- Page Heading -->
+        <div class="page-heading">
+            <div>
+                <h1>Waste Tracking Report</h1>
+
+                <p>
+                    Review pickup outcomes and waste diversion records
+                    received from the integrated modules.
+                </p>
+            </div>
+        </div>
+
+        <div class="notice">
+            <b>Automatic process:</b>
+            Tracking records are inserted by the backend when a pickup
+            outcome is confirmed and the relevant data has been received
+            and validated. This page is for monitoring and does not
+            provide manual record creation.
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="stats">
+
+            <div class="stat">
+                <p class="stat-label">Total Tracking Records</p>
+                <h2 class="stat-value" id="recordCount">—</h2>
+                <small class="stat-note">Records in this view</small>
+            </div>
+
+            <div class="stat">
+                <p class="stat-label">Successful Diversions</p>
+                <h2 class="stat-value" id="successfulCount">—</h2>
+                <small class="stat-note">Records marked Diverted</small>
+            </div>
+
+            <div class="stat">
+                <p class="stat-label">Estimated Carbon Savings</p>
+                <h2 class="stat-value" id="carbonTotal">—</h2>
+                <small class="stat-note">kg CO₂e</small>
+            </div>
+
+        </div>
+
+        <!-- Tracking Records -->
+        <section class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Tracking Records</h2>
+
+                    <p class="panel-desc">
+                        Filter the records by waste type or diversion outcome.
+                    </p>
+                </div>
+
+                <span class="pill green">DATABASE RECORDS</span>
+
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+
+                <div class="field">
+                    <label for="typeFilter">Waste type</label>
+
+                    <select id="typeFilter">
+                        <option value="">All types</option>
+                        <option value="Coffee Waste">Coffee Waste</option>
+                        <option value="Surplus Food">Surplus Food</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="statusFilter">Diversion status</label>
+
+                    <select id="statusFilter">
+                        <option value="">All statuses</option>
+                        <option value="Diverted">Diverted</option>
+                        <option value="Not Diverted">Not Diverted</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="searchInput">
+                        Search pickup / tracking ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="e.g. PU-102"
+                    >
+                </div>
+
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Tracking ID</th>
+                            <th>Pickup ID</th>
+                            <th>Waste Type</th>
+                            <th>Actual Quantity</th>
+                            <th>Tracking Date & Time</th>
+                            <th>Diversion Status</th>
+                            <th>Carbon Savings</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="trackingRows">
+                        <tr>
+                            <td colspan="7" class="empty">
+                                Loading tracking records...
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <p class="footer-note">
+            Tracking records are read-only in the admin interface.
+            Records are retrieved from the Module 5 PostgreSQL database.
+        </p>
+
+    </main>
+
+</div>
+
+<script>
+
+// ======================================
+// USER INFORMATION
+// ======================================
+
+const user = (() => {
+    try {
+        return JSON.parse(sessionStorage.getItem('w2wUser')) || {};
+    } catch (error) {
+        return {};
+    }
+})();
+
+document.getElementById('adminName').textContent =
+    user.fullName || 'Hub Branch Admin';
+
+
+// ======================================
+// ELEMENT REFERENCES
+// ======================================
+
+const rows = document.getElementById('trackingRows');
+
+const typeFilter = document.getElementById('typeFilter');
+const statusFilter = document.getElementById('statusFilter');
+const searchInput = document.getElementById('searchInput');
+
+let trackingRecords = [];
+
+
+// ======================================
+// FORMAT DATE AND TIME
+// ======================================
+
+function formatDateTime(value) {
+
+    if (!value) return '-';
+
+    const date = new Date(value);
+
+    return new Intl.DateTimeFormat('en-MY', {
+        timeZone: 'Asia/Kuala_Lumpur',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    }).format(date);
+
+}
+
+
+// ======================================
+// FORMAT NUMBERS
+// ======================================
+
+function formatNumber(value) {
+
+    return Number(value || 0).toFixed(2);
+
+}
+
+
+// ======================================
+// LOAD TRACKING RECORDS FROM POSTGRESQL
+// ======================================
+
+
+async function loadTrackingRecords() {
+
+    try {
+
+        const response = await fetch('/api/module5/tracking');
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || 'Unable to retrieve tracking records.'
+            );
+        }
+
+        // Get records from the API's data property
+        trackingRecords = result.data || [];
+
+        renderTrackingRecords();
+
+    } catch (error) {
+
+        console.error('Tracking records error:', error);
+
+        rows.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    Failed to load tracking records.
+                </td>
+            </tr>
+        `;
+
+        document.getElementById('recordCount').textContent = '—';
+        document.getElementById('successfulCount').textContent = '—';
+        document.getElementById('carbonTotal').textContent = '—';
+
+    }
+
+}
+
+
+// ======================================
+// DISPLAY TRACKING RECORDS
+// ======================================
+
+function renderTrackingRecords() {
+
+    const selectedType = typeFilter.value;
+    const selectedStatus = statusFilter.value;
+    const searchText = searchInput.value.toLowerCase().trim();
+
+    // Apply filters
+    const filteredRecords = trackingRecords.filter(record => {
+
+        const matchesType =
+            !selectedType || record.type === selectedType;
+
+        const matchesStatus =
+            !selectedStatus ||
+            record.diversion_status === selectedStatus;
+
+        const matchesSearch =
+            !searchText ||
+            String(record.pickup_id).toLowerCase().includes(searchText) ||
+            String(record.tracking_id).includes(searchText);
+
+        return matchesType && matchesStatus && matchesSearch;
+
+    });
+
+
+    // Update summary statistics based on filtered records
+    const totalRecords = filteredRecords.length;
+
+    const successfulRecords = filteredRecords.filter(
+        record => record.diversion_status === 'Diverted'
+    ).length;
+
+    const totalCarbonSavings = filteredRecords.reduce(
+        (total, record) =>
+            total + Number(record.estimated_carbon_savings || 0),
+        0
+    );
+
+    document.getElementById('recordCount').textContent =
+        totalRecords;
+
+    document.getElementById('successfulCount').textContent =
+        successfulRecords;
+
+    document.getElementById('carbonTotal').textContent =
+        formatNumber(totalCarbonSavings) + ' kg';
+
+
+    // Display empty message
+    if (filteredRecords.length === 0) {
+
+        rows.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    No tracking records match your filters.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    // Display tracking records
+    rows.innerHTML = '';
+
+    filteredRecords.forEach(record => {
+
+        const row = document.createElement('tr');
+
+        const values = [
+
+            '#TRK' + record.tracking_id,
+
+            record.pickup_id,
+
+            record.type,
+
+            formatNumber(record.actual_quantity) + ' kg',
+
+            formatDateTime(record.tracking_date_time),
+
+            record.diversion_status,
+
+            formatNumber(record.estimated_carbon_savings) + ' kg CO₂e'
+
+        ];
+
+        values.forEach((value, index) => {
+
+            const cell = document.createElement('td');
+
+            cell.textContent = value;
+
+            // Highlight diversion status
+            if (index === 5) {
+
+                const status = document.createElement('span');
+
+                status.textContent = value;
+
+                if (value === 'Diverted') {
+                    status.className = 'status-success';
+                } else {
+                    status.className = 'status-failed';
+                }
+
+                cell.textContent = '';
+                cell.appendChild(status);
+
+            }
+
+            row.appendChild(cell);
+
+        });
+
+        rows.appendChild(row);
+
+    });
+
+}
+
+
+// ======================================
+// FILTER EVENT LISTENERS
+// ======================================
+
+typeFilter.addEventListener('change', renderTrackingRecords);
+
+statusFilter.addEventListener('change', renderTrackingRecords);
+
+searchInput.addEventListener('input', renderTrackingRecords);
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+document.getElementById('logoutBtn').addEventListener('click', (event) => {
+
+    event.preventDefault();
+
+    sessionStorage.removeItem('w2wUser');
+
+    location.href = '/login.html';
+
+});
+
+
+// ======================================
+// INITIALIZE PAGE
+// ======================================
+
+loadTrackingRecords();
+
+</script>
+
+</body>
+</html>

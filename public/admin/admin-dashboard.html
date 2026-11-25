@@ -1,23 +1,679 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Dashboard | Waste2Worth</title><link rel="stylesheet" href="/assets/style.css"><link rel="stylesheet" href="/admin/module5.css"></head><body><div class="layout">
-<aside class="sidebar"><div class="logo">Waste2Worth<small>GIVING WASTE A PURPOSE</small></div><div class="profile"><b id="adminName">Hub Branch Admin</b><small>Admin Workspace</small></div><div class="nav-label">MAIN MENU</div><a class="nav-btn active" href="/admin/admin-dashboard.html">🏠 <span>Dashboard</span></a><a class="nav-btn" href="/admin/analytics-report.html">📊 <span>Analytics Report</span></a><a class="nav-btn" href="/admin/tracking-report.html">📍 <span>Tracking Report</span></a><a class="nav-btn" href="/admin/environmental-impact.html">🌳 <span>Environmental Impact</span></a><div class="nav-label">ACCOUNT</div><a class="nav-btn logout" href="#" id="logoutBtn">↪ <span>Logout</span></a></aside>
-<main class="main"><div class="topbar"><div><b>Waste2Worth Management</b><br><small>Hub Branch Admin Workspace</small></div><span class="demo-tag">DEMO DATA</span></div>
-<div class="page-heading"><div><h1>Admin Dashboard</h1><p>Monitor waste diversion, collection outcomes and environmental performance.</p></div></div>
-<div class="notice"><b>Prototype mode:</b> The figures on this page are illustrative sample records. PostgreSQL and cross-module integration have not been connected yet. Tracking is intended to be automatic; analytics reports are generated manually by the admin.</div>
-<div class="stats">
-<div class="stat"><p class="stat-label">Total Analytics Reports</p><h2 class="stat-value" id="totalReports">—</h2><small class="stat-note">Saved reports</small></div>
-<div class="stat"><p class="stat-label">Coffee Waste Diverted</p><h2 class="stat-value" id="totalCoffee">—</h2><small class="stat-note">From tracking records</small></div>
-<div class="stat"><p class="stat-label">Surplus Food Diverted</p><h2 class="stat-value" id="totalFood">—</h2><small class="stat-note">From tracking records</small></div>
-<div class="stat"><p class="stat-label">Successful Pickups</p><h2 class="stat-value" id="successful">—</h2><small class="stat-note">Confirmed successful outcomes</small></div>
-<div class="stat"><p class="stat-label">Failed Pickups</p><h2 class="stat-value" id="failed">—</h2><small class="stat-note">Confirmed failed outcomes</small></div>
-<div class="stat"><p class="stat-label">Estimated Carbon Savings</p><h2 class="stat-value" id="carbon">—</h2><small class="stat-note">Illustrative kg CO₂e</small></div>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Admin Dashboard | Waste2Worth</title>
+
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/admin/module5.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            Waste2Worth
+            <small>GIVING WASTE A PURPOSE</small>
+        </div>
+
+        <div class="profile">
+            <b id="adminName">Hub Branch Admin</b>
+            <small>Admin Workspace</small>
+        </div>
+
+        <div class="nav-label">MAIN MENU</div>
+
+        <a class="nav-btn active" href="/admin/admin-dashboard.html">
+            🏠 <span>Dashboard</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/analytics-report.html">
+            📊 <span>Analytics Report</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/tracking-report.html">
+            📍 <span>Tracking Report</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/environmental-impact.html">
+            🌳 <span>Environmental Impact</span>
+        </a>
+
+        <div class="nav-label">ACCOUNT</div>
+
+        <a class="nav-btn logout" href="#" id="logoutBtn">
+            ↪ <span>Logout</span>
+        </a>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+                <b>Waste2Worth Management</b>
+                <br>
+                <small>Hub Branch Admin Workspace</small>
+            </div>
+
+            <span class="pill green">LIVE DATABASE DATA</span>
+
+        </div>
+
+
+        <!-- Page Heading -->
+        <div class="page-heading">
+
+            <div>
+                <h1>Admin Dashboard</h1>
+
+                <p>
+                    Monitor waste diversion, collection outcomes
+                    and environmental performance.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Information Notice -->
+        <div class="notice">
+
+            <b>Module 5 Overview:</b>
+
+            Tracking records are retrieved automatically from
+            confirmed pickup outcomes. Analytics reports are
+            generated manually by the Hub Branch Admin.
+            Dashboard figures are retrieved from the Module 5
+            PostgreSQL database.
+
+        </div>
+
+
+        <!-- Summary Statistics -->
+        <div class="stats">
+
+            <div class="stat">
+                <p class="stat-label">Total Analytics Reports</p>
+                <h2 class="stat-value" id="totalReports">—</h2>
+                <small class="stat-note">Saved reports</small>
+            </div>
+
+            <div class="stat">
+                <p class="stat-label">Coffee Waste Diverted</p>
+                <h2 class="stat-value" id="totalCoffee">—</h2>
+                <small class="stat-note">Successfully diverted</small>
+            </div>
+
+            <div class="stat">
+                <p class="stat-label">Surplus Food Diverted</p>
+                <h2 class="stat-value" id="totalFood">—</h2>
+                <small class="stat-note">Successfully diverted</small>
+            </div>
+
+            <div class="stat">
+                <p class="stat-label">Successful Pickups</p>
+                <h2 class="stat-value" id="successful">—</h2>
+                <small class="stat-note">Diverted outcomes</small>
+            </div>
+
+            <div class="stat">
+                <p class="stat-label">Failed Pickups</p>
+                <h2 class="stat-value" id="failed">—</h2>
+                <small class="stat-note">Not diverted outcomes</small>
+            </div>
+
+            <div class="stat">
+                <p class="stat-label">Estimated Carbon Savings</p>
+                <h2 class="stat-value" id="carbon">—</h2>
+                <small class="stat-note">kg CO₂e</small>
+            </div>
+
+        </div>
+
+
+        <!-- Quick Access -->
+        <section class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Quick Access</h2>
+
+                    <p class="panel-desc">
+                        Open the main Module 5 functions.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="quick-grid">
+
+                <a class="quick-link" href="/admin/analytics-report.html">
+
+                    <strong>📊 Analytics Report</strong>
+
+                    <small>
+                        Choose a reporting period and manually
+                        generate a report.
+                    </small>
+
+                </a>
+
+
+                <a class="quick-link" href="/admin/tracking-report.html">
+
+                    <strong>📍 Tracking Report</strong>
+
+                    <small>
+                        Review automatically recorded pickup
+                        and diversion outcomes.
+                    </small>
+
+                </a>
+
+
+                <a class="quick-link" href="/admin/environmental-impact.html">
+
+                    <strong>🌳 Environmental Impact</strong>
+
+                    <small>
+                        Explore waste diversion and estimated
+                        environmental benefits.
+                    </small>
+
+                </a>
+
+
+                <a class="quick-link" href="/admin/analytics-report.html#generate">
+
+                    <strong>＋ Generate a Report</strong>
+
+                    <small>
+                        Start a new analytics report for
+                        a selected period.
+                    </small>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- Recent Analytics Reports -->
+        <section class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Recent Analytics Reports</h2>
+
+                    <p class="panel-desc">
+                        Reports previously generated and saved
+                        by the Hub Branch Admin.
+                    </p>
+                </div>
+
+                <a class="btn secondary" href="/admin/analytics-report.html">
+                    View all
+                </a>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Report Type</th>
+                            <th>Period</th>
+                            <th>Coffee Waste</th>
+                            <th>Surplus Food</th>
+                            <th>Generated At</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="analyticsTable">
+
+                        <tr>
+                            <td colspan="6" class="empty">
+                                Loading analytics reports...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- Recent Tracking Records -->
+        <section class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Recent Tracking Records</h2>
+
+                    <p class="panel-desc">
+                        Tracking entries are created automatically
+                        after a pickup outcome is confirmed.
+                    </p>
+                </div>
+
+                <a class="btn secondary" href="/admin/tracking-report.html">
+                    View all
+                </a>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Tracking ID</th>
+                            <th>Pickup ID</th>
+                            <th>Type</th>
+                            <th>Actual Quantity</th>
+                            <th>Tracking Date</th>
+                            <th>Diversion Status</th>
+                            <th>Carbon Savings</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="trackingTable">
+
+                        <tr>
+                            <td colspan="7" class="empty">
+                                Loading tracking records...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <p class="footer-note">
+            Waste2Worth · Module 5: Waste Tracking and Analytics
+        </p>
+
+    </main>
+
 </div>
-<section class="panel"><div class="panel-head"><div><h2>Quick Access</h2><p class="panel-desc">Open the main Module 5 functions.</p></div></div><div class="quick-grid"><a class="quick-link" href="/admin/analytics-report.html"><strong>📊 Analytics Report</strong><small>Choose a reporting period and manually generate a report.</small></a><a class="quick-link" href="/admin/tracking-report.html"><strong>📍 Tracking Report</strong><small>Review automatically recorded pickup and diversion outcomes.</small></a><a class="quick-link" href="/admin/environmental-impact.html"><strong>🌳 Environmental Impact</strong><small>Explore waste diversion and estimated environmental benefits.</small></a><a class="quick-link" href="/admin/analytics-report.html#generate"><strong>＋ Generate a Report</strong><small>Start a new analytics report for a selected period.</small></a></div></section>
-<section class="panel"><div class="panel-head"><div><h2>Recent Analytics Reports</h2><p class="panel-desc">Reports previously generated and saved by the Hub Branch Admin.</p></div><a class="btn secondary" href="/admin/analytics-report.html">View all</a></div><div class="table-wrap"><table><thead><tr><th>Report ID</th><th>Report Type</th><th>Period</th><th>Coffee Waste</th><th>Surplus Food</th><th>Generated At</th></tr></thead><tbody id="analyticsTable"></tbody></table></div></section>
-<section class="panel"><div class="panel-head"><div><h2>Recent Tracking Records</h2><p class="panel-desc">Tracking entries are intended to be created automatically after a pickup outcome is confirmed.</p></div><a class="btn secondary" href="/admin/tracking-report.html">View all</a></div><div class="table-wrap"><table><thead><tr><th>Tracking ID</th><th>Pickup ID</th><th>Type</th><th>Actual Quantity</th><th>Tracking Date</th><th>Diversion Status</th><th>Carbon Savings</th></tr></thead><tbody id="trackingTable"></tbody></table></div></section><p class="footer-note">Waste2Worth · Module 5: Waste Tracking and Analytics</p></main></div>
-<script src="/admin/module5-demo.js"></script><script>
-const user=(()=>{try{return JSON.parse(sessionStorage.getItem('w2wUser'))||{}}catch(e){return {}}})();document.getElementById('adminName').textContent=user.fullName||'Hub Branch Admin';
-const t=W2WDemo.getTotals();document.getElementById('totalReports').textContent=W2WDemo.analytics.length;document.getElementById('totalCoffee').textContent=W2WDemo.money(t.coffee)+' kg';document.getElementById('totalFood').textContent=W2WDemo.money(t.food)+' kg';document.getElementById('successful').textContent=t.successful;document.getElementById('failed').textContent=t.failed;document.getElementById('carbon').textContent=W2WDemo.money(t.carbon)+' kg';
-document.getElementById('analyticsTable').innerHTML=W2WDemo.analytics.slice(0,5).map(r=>`<tr><td>#AR${r.report_id}</td><td>${r.report_type}</td><td>${r.period_start_date}<br>to ${r.period_end_date}</td><td>${W2WDemo.money(r.total_coffee_waste)} kg</td><td>${W2WDemo.money(r.total_surplus_food)} kg</td><td>${r.generated_at}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">No reports have been generated.</td></tr>';
-document.getElementById('trackingTable').innerHTML=W2WDemo.tracking.slice(0,5).map(r=>`<tr><td>#TRK${r.tracking_id}</td><td>${r.pickup_id}</td><td>${r.type}</td><td>${W2WDemo.money(r.actual_quantity)} kg</td><td>${r.tracking_date_time}</td><td>${W2WDemo.status(r.diversion_status)}</td><td>${W2WDemo.money(r.estimated_carbon_savings)} kg CO₂e</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No tracking records are available.</td></tr>';
-document.getElementById('logoutBtn').addEventListener('click',e=>{e.preventDefault();sessionStorage.removeItem('w2wUser');location.href='/login.html'});
-</script></body></html>
+
+
+<script>
+
+// ======================================
+// USER INFORMATION
+// ======================================
+
+const user = (() => {
+
+    try {
+        return JSON.parse(sessionStorage.getItem('w2wUser')) || {};
+    } catch (error) {
+        return {};
+    }
+
+})();
+
+document.getElementById('adminName').textContent =
+    user.fullName || 'Hub Branch Admin';
+
+
+// ======================================
+// FORMAT NUMBERS
+// ======================================
+
+function formatNumber(value) {
+
+    return Number(value || 0).toFixed(2);
+
+}
+
+
+// ======================================
+// FORMAT DATE
+// ======================================
+
+function formatDate(value) {
+
+    if (!value) return '-';
+
+    const date = new Date(value);
+
+    return new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kuala_Lumpur',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).format(date);
+
+}
+
+
+// ======================================
+// FORMAT DATE RANGE
+// ======================================
+
+function formatPeriod(start, end) {
+
+    return formatDate(start) + ' to ' + formatDate(end);
+
+}
+
+
+// ======================================
+// LOAD DASHBOARD DATA
+// ======================================
+
+async function loadDashboard() {
+
+    try {
+
+        // Retrieve both API responses
+        const [trackingResponse, analyticsResponse] =
+            await Promise.all([
+
+                fetch('/api/module5/tracking'),
+
+                fetch('/api/module5/analytics')
+
+            ]);
+
+
+        const trackingResult = await trackingResponse.json();
+
+        const analyticsResult = await analyticsResponse.json();
+
+
+        // Validate responses
+        if (!trackingResponse.ok || !trackingResult.success) {
+
+            throw new Error('Unable to load tracking records.');
+
+        }
+
+        if (!analyticsResponse.ok || !analyticsResult.success) {
+
+            throw new Error('Unable to load analytics reports.');
+
+        }
+
+
+        // Get actual database records
+        const trackingRecords = trackingResult.data || [];
+
+        const analyticsReports = analyticsResult.reports || [];
+
+
+        // ======================================
+        // CALCULATE DASHBOARD SUMMARY
+        // ======================================
+
+        const divertedRecords = trackingRecords.filter(
+            record => record.diversion_status === 'Diverted'
+        );
+
+        const successfulCount = divertedRecords.length;
+
+        const failedCount = trackingRecords.filter(
+            record => record.diversion_status === 'Not Diverted'
+        ).length;
+
+
+        const totalCoffee = divertedRecords
+            .filter(record => record.type === 'Coffee Waste')
+            .reduce(
+                (total, record) =>
+                    total + Number(record.actual_quantity || 0),
+                0
+            );
+
+
+        const totalFood = divertedRecords
+            .filter(record => record.type === 'Surplus Food')
+            .reduce(
+                (total, record) =>
+                    total + Number(record.actual_quantity || 0),
+                0
+            );
+
+
+        const totalCarbon = divertedRecords.reduce(
+            (total, record) =>
+                total + Number(record.estimated_carbon_savings || 0),
+            0
+        );
+
+
+        // ======================================
+        // DISPLAY SUMMARY STATISTICS
+        // ======================================
+
+        document.getElementById('totalReports').textContent =
+            analyticsReports.length;
+
+        document.getElementById('totalCoffee').textContent =
+            formatNumber(totalCoffee) + ' kg';
+
+        document.getElementById('totalFood').textContent =
+            formatNumber(totalFood) + ' kg';
+
+        document.getElementById('successful').textContent =
+            successfulCount;
+
+        document.getElementById('failed').textContent =
+            failedCount;
+
+        document.getElementById('carbon').textContent =
+            formatNumber(totalCarbon) + ' kg';
+
+
+        // ======================================
+        // RECENT ANALYTICS REPORTS
+        // ======================================
+
+        const analyticsTable =
+            document.getElementById('analyticsTable');
+
+        analyticsTable.innerHTML = '';
+
+        if (analyticsReports.length === 0) {
+
+            analyticsTable.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty">
+                        No reports have been generated.
+                    </td>
+                </tr>
+            `;
+
+        } else {
+
+            analyticsReports.slice(0, 5).forEach(report => {
+
+                const row = document.createElement('tr');
+
+                const values = [
+
+                    '#AR' + report.report_id,
+
+                    report.report_type,
+
+                    formatPeriod(
+                        report.period_start_date,
+                        report.period_end_date
+                    ),
+
+                    formatNumber(report.total_coffee_waste) + ' kg',
+
+                    formatNumber(report.total_surplus_food) + ' kg',
+
+                    formatDate(report.generated_at)
+
+                ];
+
+                values.forEach(value => {
+
+                    const cell = document.createElement('td');
+
+                    cell.textContent = value;
+
+                    row.appendChild(cell);
+
+                });
+
+                analyticsTable.appendChild(row);
+
+            });
+
+        }
+
+
+        // ======================================
+        // RECENT TRACKING RECORDS
+        // ======================================
+
+        const trackingTable =
+            document.getElementById('trackingTable');
+
+        trackingTable.innerHTML = '';
+
+        if (trackingRecords.length === 0) {
+
+            trackingTable.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty">
+                        No tracking records are available.
+                    </td>
+                </tr>
+            `;
+
+        } else {
+
+            trackingRecords.slice(0, 5).forEach(record => {
+
+                const row = document.createElement('tr');
+
+                const values = [
+
+                    '#TRK' + record.tracking_id,
+
+                    record.pickup_id,
+
+                    record.type,
+
+                    formatNumber(record.actual_quantity) + ' kg',
+
+                    formatDate(record.tracking_date_time),
+
+                    record.diversion_status,
+
+                    formatNumber(record.estimated_carbon_savings) +
+                        ' kg CO₂e'
+
+                ];
+
+                values.forEach(value => {
+
+                    const cell = document.createElement('td');
+
+                    cell.textContent = value;
+
+                    row.appendChild(cell);
+
+                });
+
+                trackingTable.appendChild(row);
+
+            });
+
+        }
+
+
+    } catch (error) {
+
+        console.error('Dashboard error:', error);
+
+        document.getElementById('totalReports').textContent = '—';
+        document.getElementById('totalCoffee').textContent = '—';
+        document.getElementById('totalFood').textContent = '—';
+        document.getElementById('successful').textContent = '—';
+        document.getElementById('failed').textContent = '—';
+        document.getElementById('carbon').textContent = '—';
+
+        document.getElementById('analyticsTable').innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    Unable to load analytics reports.
+                </td>
+            </tr>
+        `;
+
+        document.getElementById('trackingTable').innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    Unable to load tracking records.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+document.getElementById('logoutBtn').addEventListener('click', (event) => {
+
+    event.preventDefault();
+
+    sessionStorage.removeItem('w2wUser');
+
+    location.href = '/login.html';
+
+});
+
+
+// ======================================
+// INITIALIZE DASHBOARD
+// ======================================
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>

@@ -410,3 +410,6 @@ node_modules/
 
 # Logs
 *.log
+
+# Local Module 5 backup
+module5_backup/

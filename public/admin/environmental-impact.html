@@ -1,1 +1,408 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Environmental Impact | Waste2Worth</title><link rel="stylesheet" href="/assets/style.css"><link rel="stylesheet" href="/admin/module5.css"></head><body><div class="layout"><aside class="sidebar"><div class="logo">Waste2Worth<small>GIVING WASTE A PURPOSE</small></div><div class="profile"><b id="adminName">Hub Branch Admin</b><small>Admin Workspace</small></div><div class="nav-label">MAIN MENU</div><a class="nav-btn" href="/admin/admin-dashboard.html">🏠 <span>Dashboard</span></a><a class="nav-btn" href="/admin/analytics-report.html">📊 <span>Analytics Report</span></a><a class="nav-btn" href="/admin/tracking-report.html">📍 <span>Tracking Report</span></a><a class="nav-btn active" href="/admin/environmental-impact.html">🌳 <span>Environmental Impact</span></a><div class="nav-label">ACCOUNT</div><a class="nav-btn logout" href="#" id="logoutBtn">↪ <span>Logout</span></a></aside><main class="main"><div class="topbar"><div><b>Waste2Worth Management</b><br><small>Hub Branch Admin Workspace</small></div><span class="demo-tag">ILLUSTRATIVE VISUAL</span></div><div class="page-heading"><div><h1>Environmental Impact</h1><p>Understand the potential environmental contribution of diverted coffee waste and surplus food.</p></div></div><div class="notice"><b>Calculation note:</b> Carbon savings shown here are illustrative sample values from the demo tracking records. Tree-equivalent impact is not yet calculated because a verified conversion factor has not been selected. The tree graphic is a visual concept, not a measured tree count.</div><div class="impact-hero"><section class="panel"><h2>Waste Diversion Summary</h2><p class="panel-desc">Quantities represented by the sample tracking records.</p><div class="metric-list"><div class="metric-row"><span>Coffee waste diverted</span><strong id="coffee">—</strong></div><div class="metric-row"><span>Surplus food diverted</span><strong id="food">—</strong></div><div class="metric-row"><span>Total recorded quantity</span><strong id="total">—</strong></div><div class="metric-row"><span>Estimated carbon savings</span><strong id="carbon">—</strong></div></div></section><div class="tree-stage"><div class="tree-icon" aria-hidden="true">🌳</div><div class="tree-caption">Small actions, meaningful impact</div><small>Tree-equivalent visualization concept<br>Conversion methodology to be confirmed</small></div></div><section class="panel"><div class="panel-head"><div><h2>Waste Stream Comparison</h2><p class="panel-desc">Relative quantity represented in the current demonstration data.</p></div></div><div style="margin:16px 0"><div class="metric-row"><span>Coffee waste</span><strong id="coffeePercent">—</strong></div><div class="progress"><span id="coffeeBar" style="width:0"></span></div></div><div style="margin:16px 0"><div class="metric-row"><span>Surplus food</span><strong id="foodPercent">—</strong></div><div class="progress"><span id="foodBar" style="width:0"></span></div></div></section><p class="footer-note">For the final implementation, document the carbon-emission factors and any tree-equivalent conversion source used. Do not present an illustrative tree graphic as an actual number of trees saved.</p></main></div><script src="/admin/module5-demo.js"></script><script>const user=(()=>{try{return JSON.parse(sessionStorage.getItem('w2wUser'))||{}}catch(e){return {}}})();document.getElementById('adminName').textContent=user.fullName||'Hub Branch Admin';const t=W2WDemo.getTotals(),sum=t.coffee+t.food;document.getElementById('coffee').textContent=W2WDemo.money(t.coffee)+' kg';document.getElementById('food').textContent=W2WDemo.money(t.food)+' kg';document.getElementById('total').textContent=W2WDemo.money(sum)+' kg';document.getElementById('carbon').textContent=W2WDemo.money(t.carbon)+' kg CO₂e (demo)';const cp=sum?Math.round(t.coffee/sum*100):0,fp=sum?Math.round(t.food/sum*100):0;document.getElementById('coffeePercent').textContent=cp+'%';document.getElementById('foodPercent').textContent=fp+'%';document.getElementById('coffeeBar').style.width=cp+'%';document.getElementById('foodBar').style.width=fp+'%';document.getElementById('logoutBtn').addEventListener('click',e=>{e.preventDefault();sessionStorage.removeItem('w2wUser');location.href='/login.html'});</script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Environmental Impact | Waste2Worth</title>
+
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/admin/module5.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            Waste2Worth
+            <small>GIVING WASTE A PURPOSE</small>
+        </div>
+
+        <div class="profile">
+            <b id="adminName">Hub Branch Admin</b>
+            <small>Admin Workspace</small>
+        </div>
+
+        <div class="nav-label">MAIN MENU</div>
+
+        <a class="nav-btn" href="/admin/admin-dashboard.html">
+            🏠 <span>Dashboard</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/analytics-report.html">
+            📊 <span>Analytics Report</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/tracking-report.html">
+            📍 <span>Tracking Report</span>
+        </a>
+
+        <a class="nav-btn active" href="/admin/environmental-impact.html">
+            🌳 <span>Environmental Impact</span>
+        </a>
+
+        <div class="nav-label">ACCOUNT</div>
+
+        <a class="nav-btn logout" href="#" id="logoutBtn">
+            ↪ <span>Logout</span>
+        </a>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+                <b>Waste2Worth Management</b>
+                <br>
+                <small>Hub Branch Admin Workspace</small>
+            </div>
+
+            <span class="pill green">LIVE DATABASE DATA</span>
+
+        </div>
+
+
+        <!-- Page Heading -->
+        <div class="page-heading">
+
+            <div>
+                <h1>Environmental Impact</h1>
+
+                <p>
+                    Understand the environmental contribution of
+                    diverted coffee waste and surplus food.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Information Notice -->
+        <div class="notice">
+
+            <b>Environmental impact calculation:</b>
+
+            Figures are calculated using successfully diverted waste
+            records retrieved from the Module 5 PostgreSQL database.
+            Carbon savings represent estimated values recorded by
+            the system. Tree-equivalent conversion has not yet been
+            established.
+
+        </div>
+
+
+        <!-- Impact Summary -->
+        <div class="impact-hero">
+
+            <section class="panel">
+
+                <h2>Waste Diversion Summary</h2>
+
+                <p class="panel-desc">
+                    Total quantities from successfully diverted
+                    tracking records.
+                </p>
+
+
+                <div class="metric-list">
+
+                    <div class="metric-row">
+                        <span>Coffee waste diverted</span>
+                        <strong id="coffee">—</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Surplus food diverted</span>
+                        <strong id="food">—</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Total recorded quantity</span>
+                        <strong id="total">—</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Estimated carbon savings</span>
+                        <strong id="carbon">—</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Tree Visualization -->
+            <div class="tree-stage">
+
+                <div class="tree-icon" aria-hidden="true">
+                    🌳
+                </div>
+
+                <div class="tree-caption">
+                    Small actions, meaningful impact
+                </div>
+
+                <small>
+                    Tree-equivalent visualization concept
+                    <br>
+                    Conversion methodology to be confirmed
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- Waste Stream Comparison -->
+        <section class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Waste Stream Comparison</h2>
+
+                    <p class="panel-desc">
+                        Percentage contribution of each diverted
+                        waste type to the total recorded quantity.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- Coffee Waste -->
+            <div style="margin:16px 0">
+
+                <div class="metric-row">
+                    <span>Coffee waste</span>
+                    <strong id="coffeePercent">—</strong>
+                </div>
+
+                <div class="progress">
+                    <span id="coffeeBar" style="width:0%"></span>
+                </div>
+
+            </div>
+
+
+            <!-- Surplus Food -->
+            <div style="margin:16px 0">
+
+                <div class="metric-row">
+                    <span>Surplus food</span>
+                    <strong id="foodPercent">—</strong>
+                </div>
+
+                <div class="progress">
+                    <span id="foodBar" style="width:0%"></span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <p class="footer-note">
+
+            Environmental figures are retrieved from Module 5
+            tracking records. Only records marked Diverted are
+            included. Carbon savings are estimates, and tree
+            equivalents are not presented as measured results.
+
+        </p>
+
+    </main>
+
+</div>
+
+
+<script>
+
+// ======================================
+// USER INFORMATION
+// ======================================
+
+const user = (() => {
+
+    try {
+        return JSON.parse(sessionStorage.getItem('w2wUser')) || {};
+    } catch (error) {
+        return {};
+    }
+
+})();
+
+document.getElementById('adminName').textContent =
+    user.fullName || 'Hub Branch Admin';
+
+
+// ======================================
+// FORMAT NUMBERS
+// ======================================
+
+function formatNumber(value) {
+
+    return Number(value || 0).toFixed(2);
+
+}
+
+
+// ======================================
+// LOAD ENVIRONMENTAL IMPACT DATA
+// ======================================
+
+async function loadEnvironmentalImpact() {
+
+    try {
+
+        const response = await fetch('/api/module5/tracking');
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+
+            throw new Error(
+                result.message || 'Unable to retrieve tracking records.'
+            );
+
+        }
+
+
+        // Get tracking records from API response
+        const records = result.data || [];
+
+
+        // Only include successfully diverted records
+        const divertedRecords = records.filter(record =>
+            record.diversion_status === 'Diverted'
+        );
+
+
+        // Calculate coffee waste
+        const coffeeWaste = divertedRecords
+            .filter(record => record.type === 'Coffee Waste')
+            .reduce(
+                (total, record) =>
+                    total + Number(record.actual_quantity || 0),
+                0
+            );
+
+
+        // Calculate surplus food
+        const surplusFood = divertedRecords
+            .filter(record => record.type === 'Surplus Food')
+            .reduce(
+                (total, record) =>
+                    total + Number(record.actual_quantity || 0),
+                0
+            );
+
+
+        // Calculate total diverted waste
+        const totalWaste = coffeeWaste + surplusFood;
+
+
+        // Calculate estimated carbon savings
+        const carbonSavings = divertedRecords.reduce(
+            (total, record) =>
+                total + Number(record.estimated_carbon_savings || 0),
+            0
+        );
+
+
+        // Display summary figures
+        document.getElementById('coffee').textContent =
+            formatNumber(coffeeWaste) + ' kg';
+
+        document.getElementById('food').textContent =
+            formatNumber(surplusFood) + ' kg';
+
+        document.getElementById('total').textContent =
+            formatNumber(totalWaste) + ' kg';
+
+        document.getElementById('carbon').textContent =
+            formatNumber(carbonSavings) + ' kg CO₂e';
+
+
+        // Calculate waste stream percentages
+        const coffeePercentage = totalWaste > 0
+            ? (coffeeWaste / totalWaste) * 100
+            : 0;
+
+        const foodPercentage = totalWaste > 0
+            ? (surplusFood / totalWaste) * 100
+            : 0;
+
+
+        // Display percentages
+        document.getElementById('coffeePercent').textContent =
+            coffeePercentage.toFixed(1) + '%';
+
+        document.getElementById('foodPercent').textContent =
+            foodPercentage.toFixed(1) + '%';
+
+
+        // Update progress bars
+        document.getElementById('coffeeBar').style.width =
+            coffeePercentage + '%';
+
+        document.getElementById('foodBar').style.width =
+            foodPercentage + '%';
+
+
+    } catch (error) {
+
+        console.error('Environmental impact error:', error);
+
+        document.getElementById('coffee').textContent = 'Unavailable';
+
+        document.getElementById('food').textContent = 'Unavailable';
+
+        document.getElementById('total').textContent = 'Unavailable';
+
+        document.getElementById('carbon').textContent = 'Unavailable';
+
+        document.getElementById('coffeePercent').textContent = '—';
+
+        document.getElementById('foodPercent').textContent = '—';
+
+    }
+
+}
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+document.getElementById('logoutBtn').addEventListener('click', (event) => {
+
+    event.preventDefault();
+
+    sessionStorage.removeItem('w2wUser');
+
+    location.href = '/login.html';
+
+});
+
+
+// ======================================
+// INITIALIZE PAGE
+// ======================================
+
+loadEnvironmentalImpact();
+
+</script>
+
+</body>
+</html>

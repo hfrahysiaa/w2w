@@ -1,3 +1,499 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analytics Report | Waste2Worth</title><link rel="stylesheet" href="/assets/style.css"><link rel="stylesheet" href="/admin/module5.css"></head><body><div class="layout"><aside class="sidebar"><div class="logo">Waste2Worth<small>GIVING WASTE A PURPOSE</small></div><div class="profile"><b id="adminName">Hub Branch Admin</b><small>Admin Workspace</small></div><div class="nav-label">MAIN MENU</div><a class="nav-btn" href="/admin/admin-dashboard.html">🏠 <span>Dashboard</span></a><a class="nav-btn active" href="/admin/analytics-report.html">📊 <span>Analytics Report</span></a><a class="nav-btn" href="/admin/tracking-report.html">📍 <span>Tracking Report</span></a><a class="nav-btn" href="/admin/environmental-impact.html">🌳 <span>Environmental Impact</span></a><div class="nav-label">ACCOUNT</div><a class="nav-btn logout" href="#" id="logoutBtn">↪ <span>Logout</span></a></aside><main class="main"><div class="topbar"><div><b>Waste2Worth Management</b><br><small>Hub Branch Admin Workspace</small></div><span class="pill">MANUAL GENERATION</span></div><div class="page-heading"><div><h1>Analytics Reports</h1><p>Generate a report for a selected period using available tracking records.</p></div></div><div class="notice"><b>Manual report generation:</b> The Hub Branch Admin chooses the report type and date range, then requests generation. The system calculates the totals and saves the report. The form below is a frontend demonstration and does not yet write to PostgreSQL.</div><section class="panel" id="generate"><div class="panel-head"><div><h2>Generate New Report</h2><p class="panel-desc">Select the reporting period. Report figures are calculated from tracking records in the connected system.</p></div></div><form id="reportForm"><div class="form-grid"><div class="field"><label for="reportType">Report type</label><select id="reportType" required><option value="Monthly Report">Monthly Report</option><option value="Weekly Report">Weekly Report</option><option value="Custom Report">Custom Report</option></select></div><div class="field"><label for="startDate">Period start date</label><input type="date" id="startDate" required></div><div class="field"><label for="endDate">Period end date</label><input type="date" id="endDate" required></div></div><div class="actions"><button class="btn" type="submit">Generate Report</button><button class="btn secondary" type="reset">Clear</button></div></form><div class="toast" id="resultToast" role="status"></div><div id="preview" hidden style="margin-top:18px"><h2>Generated Report Preview</h2><div class="stats"><div class="stat"><p class="stat-label">Coffee Waste</p><h2 class="stat-value" id="previewCoffee">—</h2></div><div class="stat"><p class="stat-label">Surplus Food</p><h2 class="stat-value" id="previewFood">—</h2></div><div class="stat"><p class="stat-label">Successful / Failed Pickups</p><h2 class="stat-value" id="previewPickups">—</h2></div></div><p class="field-help">Demo only: this preview is not persisted. In the integrated version, the Generate Report action will save a row to analytics_report.</p></div></section><section class="panel"><div class="panel-head"><div><h2>Report History</h2><p class="panel-desc">Previously generated analytics reports.</p></div><span class="demo-tag">DEMO DATA</span></div><div class="table-wrap"><table><thead><tr><th>Report ID</th><th>Report Type</th><th>Period</th><th>Coffee Waste</th><th>Surplus Food</th><th>Successful Pickups</th><th>Failed Pickups</th><th>Generated At</th></tr></thead><tbody id="reportRows"></tbody></table></div></section><p class="footer-note">Report generation is admin-initiated. Calculations are performed by the system; report history will be loaded from PostgreSQL after backend integration.</p></main></div><script src="/admin/module5-demo.js"></script><script>
-const user=(()=>{try{return JSON.parse(sessionStorage.getItem('w2wUser'))||{}}catch(e){return {}}})();document.getElementById('adminName').textContent=user.fullName||'Hub Branch Admin';const tbody=document.getElementById('reportRows');function showReports(){tbody.innerHTML=W2WDemo.analytics.map(r=>`<tr><td>#AR${r.report_id}</td><td>${r.report_type}</td><td>${r.period_start_date} to ${r.period_end_date}</td><td>${W2WDemo.money(r.total_coffee_waste)} kg</td><td>${W2WDemo.money(r.total_surplus_food)} kg</td><td>${r.successful_pickup_count}</td><td>${r.failed_pickup_count}</td><td>${r.generated_at}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">No analytics reports have been generated.</td></tr>'}showReports();document.getElementById('reportForm').addEventListener('submit',e=>{e.preventDefault();const start=document.getElementById('startDate').value,end=document.getElementById('endDate').value;if(end<start){alert('The end date cannot be earlier than the start date.');return}const records=W2WDemo.tracking.filter(r=>{const d=r.tracking_date_time.slice(0,10);return d>=start&&d<=end});const totals=W2WDemo.getTotals(records);document.getElementById('previewCoffee').textContent=W2WDemo.money(totals.coffee)+' kg';document.getElementById('previewFood').textContent=W2WDemo.money(totals.food)+' kg';document.getElementById('previewPickups').textContent=totals.successful+' / '+totals.failed;document.getElementById('preview').hidden=false;const toast=document.getElementById('resultToast');toast.textContent='Report preview calculated for '+start+' to '+end+'. Demo mode: no database record has been saved.';toast.classList.add('show')});document.getElementById('logoutBtn').addEventListener('click',e=>{e.preventDefault();sessionStorage.removeItem('w2wUser');location.href='/login.html'});
-</script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Analytics Report | Waste2Worth</title>
+
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/admin/module5.css">
+</head>
+
+<body>
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            Waste2Worth
+            <small>GIVING WASTE A PURPOSE</small>
+        </div>
+
+        <div class="profile">
+            <b id="adminName">Hub Branch Admin</b>
+            <small>Admin Workspace</small>
+        </div>
+
+        <div class="nav-label">MAIN MENU</div>
+
+        <a class="nav-btn" href="/admin/admin-dashboard.html">
+            🏠 <span>Dashboard</span>
+        </a>
+
+        <a class="nav-btn active" href="/admin/analytics-report.html">
+            📊 <span>Analytics Report</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/tracking-report.html">
+            📍 <span>Tracking Report</span>
+        </a>
+
+        <a class="nav-btn" href="/admin/environmental-impact.html">
+            🌳 <span>Environmental Impact</span>
+        </a>
+
+        <div class="nav-label">ACCOUNT</div>
+
+        <a class="nav-btn logout" href="#" id="logoutBtn">
+            ↪ <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <div class="topbar">
+            <div>
+                <b>Waste2Worth Management</b>
+                <br>
+                <small>Hub Branch Admin Workspace</small>
+            </div>
+
+            <span class="pill">MANUAL GENERATION</span>
+        </div>
+
+        <!-- Page Heading -->
+        <div class="page-heading">
+            <div>
+                <h1>Analytics Reports</h1>
+                <p>
+                    Generate a report for a selected period using
+                    available tracking records.
+                </p>
+            </div>
+        </div>
+
+        <div class="notice">
+            <b>Manual report generation:</b>
+            The Hub Branch Admin chooses the report type and date range.
+            The system calculates the waste quantities and pickup results
+            from tracking records, then saves the report in PostgreSQL.
+        </div>
+
+        <!-- Generate Report -->
+        <section class="panel" id="generate">
+
+            <div class="panel-head">
+                <div>
+                    <h2>Generate New Report</h2>
+                    <p class="panel-desc">
+                        Select the reporting period. Report figures are
+                        calculated from tracking records in the connected system.
+                    </p>
+                </div>
+            </div>
+
+            <form id="reportForm">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="reportType">Report type</label>
+
+                        <select id="reportType" required>
+                            <option value="Monthly Report">
+                                Monthly Report
+                            </option>
+
+                            <option value="Weekly Report">
+                                Weekly Report
+                            </option>
+
+                            <option value="Custom Report">
+                                Custom Report
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="startDate">Period start date</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="endDate">Period end date</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <button class="btn" type="submit">
+                        Generate Report
+                    </button>
+
+                    <button class="btn secondary" type="reset">
+                        Clear
+                    </button>
+                </div>
+
+            </form>
+
+            <div class="toast" id="resultToast" role="status"></div>
+
+            <!-- Generated Report Preview -->
+            <div id="preview" hidden style="margin-top:18px">
+
+                <h2>Generated Report Preview</h2>
+
+                <div class="stats">
+
+                    <div class="stat">
+                        <p class="stat-label">Coffee Waste</p>
+                        <h2 class="stat-value" id="previewCoffee">—</h2>
+                    </div>
+
+                    <div class="stat">
+                        <p class="stat-label">Surplus Food</p>
+                        <h2 class="stat-value" id="previewFood">—</h2>
+                    </div>
+
+                    <div class="stat">
+                        <p class="stat-label">
+                            Successful / Failed Pickups
+                        </p>
+                        <h2 class="stat-value" id="previewPickups">—</h2>
+                    </div>
+
+                </div>
+
+                <p class="field-help">
+                    This report has been successfully saved
+                    in the PostgreSQL database.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Report History -->
+        <section class="panel">
+
+            <div class="panel-head">
+                <div>
+                    <h2>Report History</h2>
+                    <p class="panel-desc">
+                        Previously generated analytics reports.
+                    </p>
+                </div>
+
+                <span class="pill">DATABASE RECORDS</span>
+            </div>
+
+            <div class="table-wrap">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Report Type</th>
+                            <th>Period</th>
+                            <th>Coffee Waste</th>
+                            <th>Surplus Food</th>
+                            <th>Successful Pickups</th>
+                            <th>Failed Pickups</th>
+                            <th>Generated At</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="reportRows">
+                        <tr>
+                            <td colspan="8" class="empty">
+                                Loading analytics reports...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+        <p class="footer-note">
+            Reports are generated manually by the Hub Branch Admin.
+            All report calculations are based on saved tracking records.
+        </p>
+
+    </main>
+</div>
+
+<script>
+
+// ======================================
+// USER INFORMATION
+// ======================================
+
+const user = (() => {
+    try {
+        return JSON.parse(sessionStorage.getItem('w2wUser')) || {};
+    } catch (error) {
+        return {};
+    }
+})();
+
+document.getElementById('adminName').textContent =
+    user.fullName || 'Hub Branch Admin';
+
+const tbody = document.getElementById('reportRows');
+const form = document.getElementById('reportForm');
+const toast = document.getElementById('resultToast');
+
+
+// ======================================
+// DATE FORMATTING
+// ======================================
+
+function formatDate(value) {
+
+    if (!value) return '-';
+
+    const date = new Date(value);
+
+    return new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kuala_Lumpur',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).format(date);
+}
+
+
+// ======================================
+// LOAD ANALYTICS REPORTS
+// ======================================
+
+async function loadReports() {
+
+    try {
+
+        const response = await fetch('/api/module5/analytics');
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message || 'Unable to load analytics reports.'
+            );
+        }
+
+        tbody.innerHTML = '';
+
+        if (data.reports.length === 0) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="empty">
+                        No analytics reports have been generated.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        data.reports.forEach(report => {
+
+            const row = document.createElement('tr');
+
+            const values = [
+                '#AR' + report.report_id,
+
+                report.report_type,
+
+                formatDate(report.period_start_date) +
+                    ' to ' +
+                    formatDate(report.period_end_date),
+
+                Number(report.total_coffee_waste).toFixed(2) + ' kg',
+
+                Number(report.total_surplus_food).toFixed(2) + ' kg',
+
+                report.successful_pickup_count,
+
+                report.failed_pickup_count,
+
+                formatDate(report.generated_at)
+            ];
+
+            values.forEach(value => {
+
+                const cell = document.createElement('td');
+
+                cell.textContent = value;
+
+                row.appendChild(cell);
+
+            });
+
+            tbody.appendChild(row);
+
+        });
+
+    } catch (error) {
+
+        console.error('Load reports error:', error);
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="empty">
+                    Failed to load analytics reports.
+                </td>
+            </tr>
+        `;
+
+    }
+}
+
+
+// ======================================
+// GENERATE ANALYTICS REPORT
+// ======================================
+
+form.addEventListener('submit', async (event) => {
+
+    event.preventDefault();
+
+    const reportType =
+        document.getElementById('reportType').value;
+
+    const start =
+        document.getElementById('startDate').value;
+
+    const end =
+        document.getElementById('endDate').value;
+
+    // Validate date range
+    if (end < start) {
+
+        alert('The end date cannot be earlier than the start date.');
+
+        return;
+    }
+
+    // Get logged-in staff ID
+    const staffId =
+        user.staffId ||
+        user.staff_id ||
+        'ADMIN001';
+
+    try {
+
+        const response = await fetch(
+            '/api/module5/analytics/generate',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({
+
+                    report_type: reportType,
+
+                    period_start_date: start,
+
+                    period_end_date: end,
+
+                    staff_id: staffId
+
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message || 'Report generation failed.'
+            );
+
+        }
+
+        const report = data.report;
+
+        // Display generated report preview
+        document.getElementById('previewCoffee').textContent =
+            Number(report.total_coffee_waste).toFixed(2) + ' kg';
+
+        document.getElementById('previewFood').textContent =
+            Number(report.total_surplus_food).toFixed(2) + ' kg';
+
+        document.getElementById('previewPickups').textContent =
+            report.successful_pickup_count +
+            ' / ' +
+            report.failed_pickup_count;
+
+        document.getElementById('preview').hidden = false;
+
+        // Success message
+        toast.textContent =
+            'Analytics report generated and saved successfully!';
+
+        toast.classList.add('show');
+
+        // Refresh report history from PostgreSQL
+        await loadReports();
+
+    } catch (error) {
+
+        console.error('Generate report error:', error);
+
+        toast.textContent = error.message;
+
+        toast.classList.add('show');
+
+    }
+
+});
+
+
+// ======================================
+// CLEAR FORM
+// ======================================
+
+form.addEventListener('reset', () => {
+
+    document.getElementById('preview').hidden = true;
+
+    toast.classList.remove('show');
+
+});
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+document.getElementById('logoutBtn').addEventListener('click', (event) => {
+
+    event.preventDefault();
+
+    sessionStorage.removeItem('w2wUser');
+
+    location.href = '/login.html';
+
+});
+
+
+// ======================================
+// INITIALIZE PAGE
+// ======================================
+
+loadReports();
+
+</script>
+
+</body>
+</html>
