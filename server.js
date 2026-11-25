@@ -5,8 +5,11 @@ const path = require('path');
 
 const { poolPromise } = require('./db');
 const authRoutes = require('./auth');
-const qualityCheckRoutes = require('./Quality_Check');
-const foodListingRoutes = require('./Food_Listing');
+const qualityCheckRoutes = require('./pages/api/hub/Quality_Check');
+const foodListingRoutes = require('./pages/api/hub/Food_Listing');
+const trackingRoutes = require('./pages/api/admin/tracking');
+const analyticsRoutes = require('./pages/api/admin/analytics');
+
 
 const app = express();
 const PORT = 3000;
@@ -26,6 +29,12 @@ app.use('/api/quality-check', qualityCheckRoutes);
 
 // Food Listing Routes
 app.use('/api/food-listing', foodListingRoutes);
+
+// Waste Tracking Routes
+app.use('/api/module5/tracking', trackingRoutes);
+
+// Analytics Routes
+app.use('/api/module5/analytics', analyticsRoutes);
 
 // Test Database Connection
 app.get('/api/test-db', async (req, res) => {
